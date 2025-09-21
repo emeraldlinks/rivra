@@ -1,0 +1,67 @@
+import Link from "./link.ripple"
+export default component NotFound404() {
+
+  <div class="notfound">
+     <h1 class="error-code">
+  {"40"}<span class="last">{"4"}</span>
+</h1>
+    <p>{"Oops! The page you are looking for does not exist."}</p>
+    <Link url="/" className="button bg-black text-white rounded-md p-2 font-bold animate-bounce mt-8">{"Go Home"}</Link>
+
+    <style>
+       .error-code {
+        font-size: 8rem;
+        font-weight: 700;
+        margin: 0;
+      }
+       .error-code::first-letter {
+        font-size: 10rem; /* bigger than the rest */
+        font-weight: 900;
+      }
+      
+      .error-code .last {
+        font-size: 10rem; /* bigger than the rest */
+        font-weight: 900;
+      }
+      .notfound {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+        background-color: #f9f9f9;
+        font-family: system-ui, sans-serif;
+        padding: 0 20px;
+        color: #111;
+      }
+
+      .notfound h1 {
+        font-size: 8rem;
+        margin: 0;
+        font-weight: 700;
+      }
+
+      .notfound p {
+        font-size: 1.5rem;
+        margin: 1rem 0;
+      }
+
+      .button {
+        margin-top: 1.5rem;
+        padding: 0.75rem 1.5rem;
+        background-color: #111;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background-color 0.2s;
+        
+      }
+
+     .button:hover {
+        background-color: #333;
+      }
+    </style>
+  </div>
+}

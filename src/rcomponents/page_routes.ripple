@@ -1,0 +1,22 @@
+import GlobalLoader from "./GlobalRouterLoader.ripple"
+import { useRouter } from 'ripple-tooling';
+import { createFileRoutes } from "ripple-tooling";
+import { Router } from "./router.ripple";
+
+
+interface Props {
+  enableLoader?: boolean
+}
+
+export  component PageRoutes({enableLoader = true}: Props){
+  const routes  = createFileRoutes();
+    <Router routes={routes}  />
+    if (enableLoader){
+    <GlobalLoader />
+
+    }
+
+}
+
+
+export default PageRoutes

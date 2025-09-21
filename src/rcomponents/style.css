@@ -1,0 +1,23 @@
+.loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  z-index: 9999;
+  border-radius: 2px;
+  background: linear-gradient(270deg, #1e90ff, #ff1493, #00ff7f);
+  background-size: 600% 600%;
+  transition: width 0.15s linear;
+  
+  /* blink/gradient animation */
+  animation-name: progress-blink;
+  animation-duration: 1.5s;
+  animation-timing-function: ease;
+  animation-iteration-count: infinite;
+  
+  /* opacity animation */
+  animation-name: fade-in-out; /* this will override the previous one if not careful */
+  animation-duration: 0.8s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}

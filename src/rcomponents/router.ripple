@@ -1,0 +1,81 @@
+import type { Component } from "ripple";
+import { effect, track } from "ripple";
+import { useRouter } from "ripple-tooling";
+import type { Route, RouterProp } from "ripple-tooling";
+
+/**
+ * Router Component
+ *
+ * A reactive, file-based routing component for Ripple.
+ * Handles path matching, dynamic route parameters, and rendering the correct page component.
+ *
+ * @param routes An array of route objects. Each route should have:
+ *   - `path`: the route path (supports dynamic segments like `/users/:id`)
+ *   - `component`: the Ripple component to render for this route
+ *
+ * **Reactive behavior:**
+ * - Listens to browser history events (`popstate`, `pushstate`, `replacestate`)
+ * - Recomputes the matched route whenever the path changes
+ * - Resets the match before recalculation to prevent stale data
+ *
+ * **Dynamic route parameters:**
+ * - Access dynamic segments via `useRouter().params`
+ *   e.g., `/users/:id` → `useRouter().params.id`
+ * - Access query parameters via `useRouter().queries`
+ *   e.g., `/users?id=42` → `useRouter().queries.id`
+ */
+export component Router({ routes }: RouterProp) {
+  const router = useRouter();
+
+  // reactive current path
+  let currentPath = track(window.location.pathname);
+  let matched: Route = track(null);
+
+  // update currentPath when user navigates
+  effect(() => {
+    const handler = () => {
+      @currentPath = window.location.pathname;
+      @matched = null; // reset before recalculating
+      console.log("Navigation -> reset match");
+    };
+
+    window.addEventListener("popstate", handler);
+    window.addEventListener("pushstate", handler); 
+    window.addEventListener("replacestate", handler);
+
+    return () => {
+      window.removeEventListener("popstate", handler);
+      window.removeEventListener("pushstate", handler);
+      window.removeEventListener("replacestate", handler);
+    };
+  });
+
+  // recompute matched route whenever currentPath changes
+  effect(() => {
+    const path = @currentPath;
+    if (!path) {
+      @matched = null;
+      return;
+    }
+
+    @matched = routes.find(r => router.match(r.path, path.toString())) || null;
+    console.log("Recomputed match:", @matched?.path ?? "none");
+  });
+
+  // render matched component or fallback 404 page
+  if (@matched) {
+    const Comp = @matched.component;
+    <Comp />
+  } else {
+    <DefaultNotFound />
+  }
+}
+
+/**
+ * DefaultNotFound Component
+ *
+ * Rendered when no route matches the current path.
+ */
+component DefaultNotFound() {
+  <div>{"44 Page not found"}</div>
+}
