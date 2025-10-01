@@ -2,7 +2,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  height: 2px;
+  height: 3px;
   z-index: 9999;
   border-radius: 2px;
   background: linear-gradient(270deg, #1e90ff, #ff1493, #00ff7f);

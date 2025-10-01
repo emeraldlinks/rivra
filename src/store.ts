@@ -171,3 +171,6 @@ export const appStore = createStore(
   { path: "/", user: null as null | { name: string }, theme: "light" },
   { persist: true, storageKey: "appStore" }
 );
+
+
+appStore.get()

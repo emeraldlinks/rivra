@@ -1,24 +1,21 @@
-// vite.config.ts
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite';
+import { ripple } from 'vite-plugin-ripple';
+import path from 'path';
 
-export default defineConfig({
-  plugins: [
-    {
-      name: "vite-ripple-loader",
-      enforce: "pre",
-      resolveId(id) {
-        if (id.endsWith(".ripple")) {
-          return id; // mark as handled
-        }
-      },
-      load(id) {
-        if (id.endsWith(".ripple")) {
-          // Example: just wrap the file path as a component
-          return `export default function RipplePage() {
-            return "Loaded ripple file: ${id}";
-          }`;
-        }
-      },
-    },
-  ],
-});
+export default defineConfig(({ mode }) => ({
+	plugins: [ripple()],
+	build: {
+		target: 'esnext',
+		minify: false,
+		sourcemap: mode !== 'production',
+		lib: {
+			entry: 'src/index.ts',
+			formats: ['es'],
+			fileName: 'index',
+		},
+		rollupOptions: {
+			external: ['ripple', /^ripple\//],
+		},
+	},
+	root: path.resolve(__dirname),
+}));

@@ -1,47 +1,62 @@
 {
-  "name": "ripple-tooling",
-  "version": "1.0.4",
+  "name": "ripple-file-router",
+  "version": "0.0.1",
   "description": "A minimal, lightweight SPA router system designed for RippleJS. Automatically generates routes from your .ripple pages, supports nested directories, includes global router loader and persistent state manager.",
-  "keywords": ["ripple", "router", "spa", "store", "routing", "tools", "tooling"],
+  "keywords": [
+    "ripple",
+    "router",
+    "spa",
+    "store",
+    "routing",
+    "tools",
+    "tooling"
+  ],
   "bin": {
-    "ripple-tooling": "./cli.js"
+    "ripple-file-router init": "./cli.js"
   },
-  "homepage": "https://github.com/emeraldlinks/ripple-tooling#readme",
+  
+  "homepage": "https://github.com/emeraldlinks/ripple-file-router#readme",
   "bugs": {
-    "url": "https://github.com/emeraldlinks/ripple-tooling/issues"
+    "url": "https://github.com/emeraldlinks/ripple-file-router/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/emeraldlinks/ripple-tooling.git"
+    "url": "git+https://github.com/emeraldlinks/ripple-file-router.git"
   },
   "license": "MIT",
-  "author": "ing",
+  "author": "Joseph Christopher",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
   "exports": {
     ".": {
-      "import": "./src/index.ts",
-      "default": "./src/index.ts",
-      "types": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
     }
   },
   "files": [
     "cli.js",
     "ReadMe.md",
-    "src",
+    "dist",
     "vite-plugin-ripple.d.ts",
-    "tsconfig.json"
+    "src/pages",
+    "src/App.ripple",
+    "src/App2.ripple",
+    "src/routes.ts"
+
   ],
   "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly --declaration --outDir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "ripple": "^0.2.55",
+    "ripple": "^0.2.92",
     "vite": "^7.1.6",
     "vite-plugin-ripple": "^0.2.56"
   },
   "devDependencies": {
-    "@types/node": "^24.5.2"
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.5.2",
+    "typescript": "^5.6.2"
   }
 }

@@ -9,3 +9,12 @@ export interface Route {
 export interface RouterProp {
   routes: Route[];
 }
+
+export interface LinkProps {
+  href: string;
+  children: Component;
+  onLoading?: () => void;
+  emitEvent?: boolean;
+  loadingComponent?: Component;
+  className?: string
+}

@@ -197,6 +197,12 @@ helloStore.subscribe(state => {
   console.log("Current message:", state.message);
 });
 
+// Get changes anywhere
+const data = helloStore.get();
+console.log(helloStore) // { message: Current message}
+console.log(data.message) // Current message
+
+
 // Update the store
 helloStore.update({ message: "Hello Ripple!" });
 
@@ -223,6 +229,13 @@ const persistentHelloStore = createStore(
 persistentHelloStore.subscribe(state => {
   console.log("Current message:", state.message);
 });
+
+
+// Get changes anywhere
+const data = helloStore.get();
+console.log(helloStore) // { message: Current message}
+console.log(data.message) // Current message
+
 
 // Update the store
 persistentHelloStore.update({ message: "Updated and Persisted!" });

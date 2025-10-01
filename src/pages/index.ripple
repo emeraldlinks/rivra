@@ -6,7 +6,7 @@ export default component Home(){
     <div class='container'>
 		<h1>{'Welcome to Ripple!'}</h1>
 		<div class='counter'>
-			let count = track(0);
+			let count = track(2000);
 
 			<button onClick={() => @count--}>{'-'}</button>
 			<span class='count'>{@count}</span>

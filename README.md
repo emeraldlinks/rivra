@@ -1,4 +1,4 @@
-# ripple-tooling
+# ripple-file-router
 
 A minimal, file-based routing system for **Ripple.js**. Automatically generates routes from your .ripple pages, supports nested directories, includes global router loader and persistent state manager. Structure your `pages/` directory and start routing with a single component.
 
@@ -18,20 +18,20 @@ The issues are fixed in **1.0.3**—everything should work perfectly now. Thanks
 
 
 ```bash
-npm install ripple-tooling
-npx ripple-tooling init  
+npm install ripple-file-router
+npx ripple-file-router init  
 ```
 
 or
 
 ```bash
-yarn add ripple-tooling
-npx ripple-tooling init  
+yarn add ripple-file-router
+npx ripple-file-router init  
 ```
 
 ## Quick Start
  
-After initiating ripple-tooling, the rcomponent and pages dir will be visible in your project src dir.
+After initiating ripple-file-router, the pages directory and the configured App.ripple file will be visible in your project src dir. The App.ripple is optional to overwrite.
 
 ### Directory Structure
 
@@ -75,9 +75,9 @@ import Link from "./rcomponents/page_routes.ripple";
 
 export component Navigation() {
   <nav>
-    <Link url="/"><p>{"Home"}</p></Link>
-    <Link emitEvent={false} url="/about"><p>{"About"}</p></Link>
-    <Link url="/users/42/user/john"><p>{"User Profile"}</p></Link>
+    <Link href="/"><p>{"Home"}</p></Link>
+    <Link emitEvent={false} href="/about"><p>{"About"}</p></Link>
+    <Link href="/users/42/user/john"><p>{"User Profile"}</p></Link>
   </nav>
 }
 ```
@@ -86,7 +86,7 @@ export component Navigation() {
 
 | Prop               | Type         | Default | Description                                   |
 | ------------------ | ------------ | ------- | --------------------------------------------- |
-| `url`              | `string`     | —       | Path to navigate to                           |
+| `href`              | `string`     | —       | Path to navigate to                           |
 | `children`         | `Component`  | —       | Content to render inside link                 |
 | `onLoading`        | `() => void` | —       | Callback when navigation starts               |
 | `emitEvent`        | `boolean`    | `true`  | Whether to trigger route events for this link |
@@ -99,7 +99,7 @@ export component Navigation() {
 You can subscribe to router events if you need custom behavior:
 
 ```ts
-import { useRouter } from "ripple-tooling";
+import { useRouter } from "ripple-file-router";
 
 const router = useRouter();
 
@@ -121,7 +121,7 @@ You can opt out of events per `Link` with `emitEvent={false}`.
 Access route params and queries in any component:
 
 ```ts
-import { useRouter } from "ripple-tooling";
+import { useRouter } from "ripple-file-router";
 
 export component UserProfile() {
   const router = useRouter();
@@ -187,7 +187,7 @@ Here are extra two simple Hello World store examples for getting started and exp
 
 ### Store without persist (default)
 ```ts
-import { createStore } from "ripple-tooling";
+import { createStore } from "ripple-file-router";
 
 // Create a simple store
 const helloStore = createStore({ message: "Hello World!" });
@@ -196,6 +196,12 @@ const helloStore = createStore({ message: "Hello World!" });
 helloStore.subscribe(state => {
   console.log("Current message:", state.message);
 });
+
+// Get changes anywhere
+const data = helloStore.get();
+console.log(helloStore) // { message: Current message}
+console.log(data.message) // Current message
+
 
 // Update the store
 helloStore.update({ message: "Hello Ripple!" });
@@ -211,7 +217,7 @@ helloStore.update({ message: "Hello Ripple!" });
 ### Store with persist
 
 ```ts
-import { createStore } from "ripple-tooling";
+import { createStore } from "ripple-file-router";
 
 // Create a persisted store
 const persistentHelloStore = createStore(
@@ -223,6 +229,13 @@ const persistentHelloStore = createStore(
 persistentHelloStore.subscribe(state => {
   console.log("Current message:", state.message);
 });
+
+
+// Get changes anywhere
+const data = helloStore.get();
+console.log(helloStore) // { message: Current message}
+console.log(data.message) // Current message
+
 
 // Update the store
 persistentHelloStore.update({ message: "Updated and Persisted!" });

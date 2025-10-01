@@ -12,6 +12,7 @@ export component TopProgress() {
 
   // internal: gradual increment until ~90%
   const startProgress = () => {
+    console.log("progress started")
     @visible = true;
     @running = true;
     @progress = 4; // initial tiny bar

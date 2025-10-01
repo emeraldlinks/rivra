@@ -1,5 +1,5 @@
 import { track, effect } from 'ripple';
-import { useRouter } from 'ripple-tooling';
+import { useRouter } from '../userouter';
 import "./style.css"
 
 export  component GlobalLoader() {

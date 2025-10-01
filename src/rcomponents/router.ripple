@@ -1,7 +1,7 @@
 import type { Component } from "ripple";
 import { effect, track } from "ripple";
-import { useRouter } from "ripple-tooling";
-import type { Route, RouterProp } from "ripple-tooling";
+import { useRouter } from "../userouter";
+import type { Route, RouterProp } from "../types";
 
 /**
  * Router Component
@@ -29,14 +29,13 @@ export component Router({ routes }: RouterProp) {
 
   // reactive current path
   let currentPath = track(window.location.pathname);
-  let matched: Route = track(null);
+  let matched = track<Route | null>(null);
 
   // update currentPath when user navigates
   effect(() => {
     const handler = () => {
       @currentPath = window.location.pathname;
       @matched = null; // reset before recalculating
-      console.log("Navigation -> reset match");
     };
 
     window.addEventListener("popstate", handler);
@@ -59,7 +58,8 @@ export component Router({ routes }: RouterProp) {
     }
 
     @matched = routes.find(r => router.match(r.path, path.toString())) || null;
-    console.log("Recomputed match:", @matched?.path ?? "none");
+    // console.log("matched: ", @matched.path)
+
   });
 
   // render matched component or fallback 404 page

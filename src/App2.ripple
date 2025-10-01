@@ -1,0 +1,9 @@
+// Copy this app's content to your app's App.ripple file
+
+import { track } from 'ripple';
+import {PageRoutes} from "ripple-file-router"
+import { modules } from "./routes";
+
+export component App() {
+        <PageRoutes modules={modules} />
+}

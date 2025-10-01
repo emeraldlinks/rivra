@@ -3,24 +3,28 @@ export * from "./createFileRoutes";
 export * from "./userouter";
 export * from "./types";
 export * from "./store";
+import type { Component } from "ripple";
 
 
- 
 
 
-// // @ts-expect-error: known issue, we're working on it
-// export { TopProgress } from './progress.ripple';
-
-// // @ts-expect-error: known issue, we're working on it
-// export { PageRoutes } from './page_routes.ripple';
-
-// // @ts-expect-error: known issue, we're working on it
-// export { Router } from './router.ripple';
-
-// // @ts-expect-error: known issue, we're working on it
-// export { GlobalLoader } from './GlobalRouterLoader.ripple';
-
-// // @ts-expect-error: known issue, we're working on it
-// export { Link } from './link.ripple';
+export {addAliasPlugin} from "./vite-plugin-add-alias"
+export { loadPages } from "./globe";
 
 
+
+export { default as PageRoutes } from "./rcomponents/page_routes.ripple";
+export { Router } from "./rcomponents/router.ripple";
+export { default as GlobalLoader } from "./rcomponents/GlobalRouterLoader.ripple";
+export {default as Link} from "./rcomponents/link.ripple"
+export { default as TopProgress } from "./rcomponents/progress.ripple";
+
+
+
+// export declare function Link( href: string,
+//     emitEvent: true,
+//   children?: Component,
+//   onLoading?: () => void,
+//   loadingComponent?: Component,
+//   className?: string
+// ): void

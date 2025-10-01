@@ -1,24 +1,17 @@
 import type { Component } from 'ripple';
-import { useRouter } from 'ripple-tooling';
+import { useRouter } from '../userouter';
 import { track, effect } from 'ripple';
-
+import {LinkProps} from "../types.ts"
 /**
  * Props for the Link component.
  * 
- * @property url The destination URL the link navigates to.
+ * @property href The destination href the link navigates to.
  * @property children The component to render inside the link.
  * @property onLoading Optional callback invoked when navigation starts or completes.
  * @property emitEvent Whether to emit router events for this link (default: true). If false, navigation occurs without triggering global events.
  * @property loadingComponent Optional component to render while this link is loading.
  */
-interface LinkProps {
-  url: string;
-  children: Component;
-  onLoading?: () => void;
-  emitEvent?: boolean;
-  loadingComponent?: Component;
-  className?: string
-}
+
 
 /**
  * Ripple-compatible Link component.
@@ -31,7 +24,7 @@ interface LinkProps {
  * Query parameters are accessible via `useRouter().queries`.
  */
 export component Link({
-  url,
+  href,
   children,
   onLoading,
   loadingComponent,
@@ -43,20 +36,19 @@ export component Link({
 
   /**
    * Subscribe to router events scoped to this link.
-   * Only triggers when navigating to this link's URL.
+   * Only triggers when navigating to this link's href.
    */
   effect(() => {
     const offStart = router.on("start", (path) => {
-      if (path === url) {
-        isLoading = true;
-        console.log("start for this link only");
+      if (path === href) {
+        @isLoading = true;
+       
       }
     });
 
     const offComplete = router.on("complete", (path) => {
-      if (path === url) {
-        isLoading = false;
-        console.log("complete for this link only");
+      if (path === href) {
+        @isLoading = false;
         if (onLoading) onLoading();
       }
     });
@@ -74,13 +66,12 @@ export component Link({
    */
   const handleClick = (e: MouseEvent) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
-
     e.preventDefault();
     if (onLoading) onLoading(); // optional immediate callback
-    router.push(url, emitEvent);
+    router.push(href, emitEvent);
   };
 
-    <a class={className} href={url} onClick={handleClick}>
+    <a class={className} href={href} onClick={handleClick}>
       <children />
     </a>
 }

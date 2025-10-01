@@ -6,9 +6,9 @@ import type { Route } from "./types";
 let NotFoundComponent: Component;
 
 
-export function createFileRoutes(): Route[] {
+export function createFileRoutes(modules: any[]): Route[] {
   // @ts-ignore
-  const modules = import.meta.glob("/src/pages/**/*.ripple", { eager: true });
+  ///const modules = import.meta.glob("/src/pages/**/*.ripple", { eager: true });
  NotFoundComponent = modules["/src/pages/notfound.ripple"]?.default
 
   const routes: Route[] = Object.entries(modules).map(([file, mod]) => {
@@ -27,6 +27,4 @@ export function createFileRoutes(): Route[] {
   routes.push({ path: "*", component: NotFoundComponent });
   return routes;
 }
-
-
 
