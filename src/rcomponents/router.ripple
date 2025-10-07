@@ -77,5 +77,9 @@ export component Router({ routes }: RouterProp) {
  * Rendered when no route matches the current path.
  */
 component DefaultNotFound() {
-  <div>{"44 Page not found"}</div>
+  <div>{"404 Page not found"}</div>
 }
+
+
+
+export default Router

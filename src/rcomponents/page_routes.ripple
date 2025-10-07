@@ -1,4 +1,3 @@
-import GlobalLoader from "./GlobalRouterLoader.ripple"
 import { useRouter } from '../userouter';
 import { createFileRoutes } from "../createFileRoutes";
 import { Router } from "./router.ripple";
@@ -12,10 +11,7 @@ interface Props {
 export  component PageRoutes({modules, enableLoader = true}: Props){
   const routes  = createFileRoutes(modules);
     <Router routes={routes}  />
-    if (enableLoader){
-    <GlobalLoader />
-
-    }
+   
 
 }
 

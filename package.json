@@ -1,6 +1,6 @@
 {
   "name": "ripple-file-router",
-  "version": "0.0.1",
+  "version": "0.0.11",
   "description": "A minimal, lightweight SPA router system designed for RippleJS. Automatically generates routes from your .ripple pages, supports nested directories, includes global router loader and persistent state manager.",
   "keywords": [
     "ripple",
@@ -14,7 +14,6 @@
   "bin": {
     "ripple-file-router init": "./cli.js"
   },
-  
   "homepage": "https://github.com/emeraldlinks/ripple-file-router#readme",
   "bugs": {
     "url": "https://github.com/emeraldlinks/ripple-file-router/issues"
@@ -27,6 +26,7 @@
   "author": "Joseph Christopher",
   "type": "module",
   "main": "./dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -43,14 +43,13 @@
     "src/App.ripple",
     "src/App2.ripple",
     "src/routes.ts"
-
   ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly --declaration --outDir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "ripple": "^0.2.92",
+    "ripple": "^0.2.109",
     "vite": "^7.1.6",
     "vite-plugin-ripple": "^0.2.56"
   },

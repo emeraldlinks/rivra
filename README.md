@@ -3,19 +3,7 @@
 A minimal, file-based routing system for **Ripple.js**. Automatically generates routes from your .ripple pages, supports nested directories, includes global router loader and persistent state manager. Structure your `pages/` directory and start routing with a single component.
 
 
----
-
-## Important Note for Early Users
-
-Hello! If you installed version **1.0.1**, my apologies if it didn’t work as expected.  
-The issues are fixed in **1.0.3**—everything should work perfectly now. Thanks for your patience! I’ll continue improving the package as Ripple.js evolves.
-
----
-
-
-
 ## Installation
-
 
 ```bash
 npm install ripple-file-router
@@ -55,10 +43,11 @@ Dynamic segments use `[param]` notation like `[id]` or `[username]`.
 ### App Component
 
 ```ts
-import {PageRoutes} from "./rcomponents/page_routes.ripple";
+import {PageRoutes} from "ripple-file-router"
+import { modules } from "./routes";
 
 export component App() {
-  <PageRoutes />
+        <PageRoutes modules={modules}  />
 }
 ```
 
@@ -71,7 +60,7 @@ That's it! Your routing is now set up. `PageRoutes` automatically reads your `pa
 Use the `Link` component for navigation:
 
 ```ts
-import Link from "./rcomponents/page_routes.ripple";
+import Link from "ripple-file-router"
 
 export component Navigation() {
   <nav>
@@ -99,7 +88,7 @@ export component Navigation() {
 You can subscribe to router events if you need custom behavior:
 
 ```ts
-import { useRouter } from "ripple-file-router";
+import { useRouter } from "ripple-file-router"
 
 const router = useRouter();
 
@@ -121,7 +110,7 @@ You can opt out of events per `Link` with `emitEvent={false}`.
 Access route params and queries in any component:
 
 ```ts
-import { useRouter } from "ripple-file-router";
+import { useRouter } from "ripple-file-router"
 
 export component UserProfile() {
   const router = useRouter();
@@ -143,17 +132,18 @@ export component UserProfile() {
 ---
 
 ### Global Loading Indicator (Optional)
-you can disable it with ```ts
- <PageRoutes enableLoader={false} /> ``` props
+you can disable it with props ```ts
+ <PageRoutes enableLoader={false} /> 
+``` 
 
 ```ts
-import {PageRoutes} from "./rcomponents/page_routes.ripple";
+import {PageRoutes} from "ripple-file-router"
+import { modules } from "./routes";
 
 export component App() {
-  <div>
-    <PageRoutes enableLoader={false} />
-  </div>
+        <PageRoutes modules={modules} enableLoader={false} />
 }
+
 ```
 
 `GlobalLoader` reacts to router events and shows a top progress bar automatically.
@@ -162,7 +152,7 @@ export component App() {
 
 ---
 
-// -------------------- Example Stores --------------------
+-------------------- Example Stores --------------------
 ```ts
  //* Route store for storing current route path
  //* Persisted in localStorage as "routeStore"
@@ -187,7 +177,7 @@ Here are extra two simple Hello World store examples for getting started and exp
 
 ### Store without persist (default)
 ```ts
-import { createStore } from "ripple-file-router";
+import { createStore } from "ripple-file-router"
 
 // Create a simple store
 const helloStore = createStore({ message: "Hello World!" });
@@ -217,7 +207,7 @@ helloStore.update({ message: "Hello Ripple!" });
 ### Store with persist
 
 ```ts
-import { createStore } from "ripple-file-router";
+import { createStore } from "ripple-file-router"
 
 // Create a persisted store
 const persistentHelloStore = createStore(

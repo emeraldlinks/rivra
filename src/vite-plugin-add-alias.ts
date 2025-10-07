@@ -13,7 +13,6 @@ export function addAliasPlugin(): Plugin {
       const srcPath = `${__dirname}/src`; // Relative path for bundling
 
       // Add the alias for `@src`
-      config.resolve.alias['@src'] = srcPath;
 
       return config;
     },

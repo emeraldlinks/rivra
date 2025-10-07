@@ -1,18 +1,18 @@
 {
-	"compilerOptions": {
-		"target": "ESNext",
-		"module": "ESNext",
-		"lib": ["ES2022", "DOM", "DOM.Iterable"],
-		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"moduleResolution": "bundler",
-		"jsx": "preserve",
-		"jsxImportSource": "ripple",
-		"isolatedModules": true,
-		"emitDeclarationOnly": true,
-		"declaration": true,
-		"outDir": "dist",
-		"removeComments": false
-	},
-	"include": ["src", "ripple.d.ts"],
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": ["node", "send", "serve-static"],
+    "jsx": "preserve",
+    "jsxImportSource": "ripple"
+  },
+  "include": ["src", "ripple.d.ts", "**/*.ripple", "**/*.d.ts", "src/types/**/*.d.ts"]
+
 }

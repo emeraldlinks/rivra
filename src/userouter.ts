@@ -1,61 +1,68 @@
 import type { Component } from "ripple";
 
 type RouterListener = (path: string) => void;
+type BeforePopCallback = (url: string) => boolean | void;
 
 /**
  * RouterStore
  * -----------
- * This class provides a simple client-side router with support for:
- * - path tracking
- * - query parameters
- * - dynamic route params
- * - loading state
- * - router events (start, complete, change)
+ * Client-side router for Ripple apps, inspired by Next.js router.
+ * Features:
+ * - Path tracking
+ * - Query parameters
+ * - Dynamic route parameters (params)
+ * - Loading state
+ * - Router events: start, complete, change
+ * - Shallow routing
+ * - Back navigation guards
+ * - Prefetching of routes
  * 
- * It uses the HTML5 history API to manage navigation without full page reloads.
+ * Uses HTML5 History API to avoid full page reloads.
  */
 class RouterStore {
-  /** Current pathname of the app (e.g., "/users/42") */
+  /** Current pathname (e.g., "/users/42") */
   path: string = "";
 
-  /** Object containing query parameters (e.g., { name: "Joe" }) */
+  /** Query parameters (e.g., { tab: "posts" }) */
   queries: Record<string, string> = {};
 
-  /** Object containing dynamic route parameters (e.g., { id: "42" }) */
+  /** Dynamic route parameters extracted from matched patterns (e.g., { id: "42" }) */
   params: Record<string, string> = {};
 
-  /** Loading state, true when a navigation starts, false when complete */
+  /** Loading state, true when navigation starts */
   loading = false;
 
-  /** Internal event listeners grouped by type */
+  /** Internal event listeners: start, complete, change */
   private listeners: {
     start: RouterListener[];
     complete: RouterListener[];
     change: RouterListener[];
   } = { start: [], complete: [], change: [] };
 
-  /**
-   * Constructor
-   * -----------
-   * Initializes the router with the current location.
-   * Automatically listens to "popstate" events to sync browser back/forward navigation.
-   */
+  /** Callbacks that can block back/forward navigation */
+  private beforePop: BeforePopCallback[] = [];
+
   constructor() {
     this.syncWithLocation();
-    window.addEventListener("popstate", () => this.syncWithLocation());
+    window.addEventListener("popstate", () => this.handlePopState());
+  }
+
+  /** Handle browser back/forward events */
+  private handlePopState() {
+    for (const fn of this.beforePop) {
+      const result = fn(this.asPath);
+      if (result === false) return; // Cancel navigation
+    }
+    this.syncWithLocation();
   }
 
   /**
-   * syncWithLocation
-   * ----------------
-   * Updates the internal router state to match window.location.
-   * Emits "change" and "complete" events by default unless `announce` is false.
-   * 
-   * @param announce Whether to trigger router events (default: true)
+   * Sync router state with window.location
+   * @param announce Whether to emit events (default: true)
    */
-  private syncWithLocation(announce: boolean = true) {
-    this.path = location.pathname;
-    this.queries = Object.fromEntries(new URLSearchParams(location.search).entries());
+  private syncWithLocation(announce = true) {
+    this.path = window.location.pathname;
+    this.queries = Object.fromEntries(new URLSearchParams(window.location.search).entries());
     this.params = {};
     this.loading = false;
 
@@ -65,25 +72,15 @@ class RouterStore {
     }
   }
 
-  /**
-   * emit
-   * ----
-   * Calls all listeners of the given type with the current path.
-   * 
-   * @param type Event type: "start", "complete", or "change"
-   * @param path The current navigation path
-   */
+  /** Emit event to all listeners */
   private emit(type: keyof RouterStore["listeners"], path: string) {
     for (const cb of this.listeners[type]) cb(path);
   }
 
   /**
-   * on
-   * --
-   * Subscribe to a router event.
-   * 
-   * @param type Event type: "start", "complete", "change"
-   * @param cb Callback function called with the path
+   * Subscribe to router events
+   * @param type "start" | "complete" | "change"
+   * @param cb Callback called with path
    * @returns Unsubscribe function
    */
   on(type: keyof RouterStore["listeners"], cb: RouterListener) {
@@ -93,72 +90,99 @@ class RouterStore {
     };
   }
 
-  /**
-   * push
-   * ----
-   * Navigate to a new URL and push it into the browser history.
-   * Emits "start" if `announce` is true.
-   * 
-   * @param url Target URL
-   * @param announce Whether to trigger router events (default: true)
-   */
-  push(url: string, announce: boolean = true) {
-    this.loading = true;
-    if (announce) this.emit("start", url);
 
-    const [path, search = ""] = url.split("?");
-    window.history.pushState({}, "", url);
-    this.path = path;
-    this.queries = Object.fromEntries(new URLSearchParams(search).entries());
-    this.syncWithLocation(announce);
-    window.dispatchEvent(new Event("popstate"));
+  /** Builds a complete URL from path + query object */
+  private buildUrl(path: string, queries?: Record<string, any>): string {
+    if (!queries || Object.keys(queries).length === 0) return path;
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(queries)) {
+      if (value !== undefined && value !== null) params.set(key, String(value));
+    }
+    const query = params.toString();
+    return query ? `${path}?${query}` : path;
   }
 
   /**
-   * replace
-   * -------
-   * Navigate to a new URL and replace the current browser history entry.
-   * Emits "start" if `announce` is true.
-   * 
-   * @param url Target URL
-   * @param announce Whether to trigger router events (default: true)
+   * Register a callback before back/forward navigation
+   * Return false to cancel navigation
    */
-  replace(url: string, announce: boolean = true) {
-    this.loading = true;
-    if (announce) this.emit("start", url);
-
-    const [path, search = ""] = url.split("?");
-    window.history.replaceState({}, "", url);
-    this.path = path;
-    this.queries = Object.fromEntries(new URLSearchParams(search).entries());
-    this.syncWithLocation(announce);
-    window.dispatchEvent(new Event("popstate"));
+  beforePopState(cb: BeforePopCallback) {
+    this.beforePop.push(cb);
+    return () => {
+      this.beforePop = this.beforePop.filter(f => f !== cb);
+    };
   }
 
   /**
-   * back
-   * ----
-   * Navigate back in browser history.
-   * Emits "start" if `announce` is true.
-   * 
-   * @param announce Whether to trigger router events (default: true)
+   * Navigate to a new URL (pushState)
+   * @param url Target URL
+   * @param announce Emit events? (default: true)
+   * @param shallow Update URL without full sync? (default: false)
    */
-  back(announce: boolean = true) {
+  push(
+    url: string,
+    announce = true,
+    shallow = false,
+    queries?: Record<string, string | number | boolean>,
+  ) {
+    const fullUrl = this.buildUrl(url, queries);
+    this.navigate(fullUrl, "push", announce, shallow);
+  }
+
+  /**
+   * Replace current URL (replaceState)
+   * @param url Target URL
+   * @param announce Emit events? (default: true)
+   * @param shallow Update URL without full sync? (default: false)
+   */
+
+  replace(
+    url: string,
+    announce = true,
+    shallow = false,
+    queries?: Record<string, string | number | boolean>,
+  ) {
+    const fullUrl = this.buildUrl(url, queries);
+    this.navigate(fullUrl, "replace", announce, shallow);
+  }
+
+
+  /** Go back in browser history */
+  back(announce = true) {
     this.loading = true;
     if (announce) this.emit("start", this.path);
     history.back();
     window.dispatchEvent(new Event("popstate"));
   }
 
+  /** Internal navigation helper */
+  private navigate(url: string, method: "push" | "replace", announce = true, shallow = false) {
+    this.loading = true;
+    if (announce) this.emit("start", url);
+
+    const [path, search = ""] = url.split("?");
+
+    // Always update internal state
+    this.path = path;
+    this.queries = Object.fromEntries(new URLSearchParams(search).entries());
+
+    // Update browser history
+    if (method === "push") window.history.pushState({}, "", url);
+    else window.history.replaceState({}, "", url);
+
+    // Only run full sync/announce if NOT shallow
+    if (!shallow) this.syncWithLocation(announce);
+
+    // Trigger popstate so listeners react
+    window.dispatchEvent(new Event("popstate"));
+  }
+
   /**
-   * matchRoute
-   * ----------
-   * Check if a given path matches a route pattern.
-   * Supports dynamic parameters (e.g., "/users/:id") and wildcards "*".
-   * 
-   * @param pathPattern Route pattern
-   * @param currentPath Current path to match
+   * Match a route pattern to a path
+   * @param pathPattern Pattern (e.g., "/users/:id")
+   * @param currentPath Path to match (e.g., "/users/42")
    * @returns true if matches, null if not
+   * Sets `this.params` with extracted dynamic parameters
    */
   matchRoute(pathPattern: string, currentPath: string) {
     if (!currentPath) return null;
@@ -181,59 +205,118 @@ class RouterStore {
     this.params = match.groups || {};
     return true;
   }
+
+  /** Simulate prefetching a route */
+  prefetch(url: string) {
+    console.log("Prefetching route:", url);
+    return Promise.resolve();
+  }
+
+  /** Resolve relative href to absolute path + query */
+  resolveHref(href: string) {
+    const url = new URL(href, window.location.origin);
+    return url.pathname + url.search;
+  }
+
+  /** Full path with query string */
+  get asPath() {
+    return window.location.pathname + window.location.search;
+  }
 }
 
 export const routerStore = new RouterStore();
 
-/**
- * useRouter Hook
- * --------------
- * A simple reactive interface to access router state in Ripple components.
- * Provides:
- * - path
- * - queries (query parameters)
- * - params (dynamic route params)
- * - loading state
- * - navigation methods: push, replace, back
- * - route matching and event subscription
- */
+/** useRouter hook */
 export function useRouter() {
   return {
-    get path() {
-      return routerStore.path;
-    },
-    get queries() {
-      return routerStore.queries;
-    },
-    get params() {
-      return routerStore.params;
-    },
-    get loading() {
-      return routerStore.loading;
-    },
-    push: (url: string, announce: boolean = true) => routerStore.push(url, announce),
-    replace: (url: string, announce: boolean = true) => routerStore.replace(url, announce),
-    back: (announce: boolean = true) => routerStore.back(announce),
+    // Basic path info
+    get path() { return routerStore.path; },
+    get asPath() { return routerStore.asPath; },
+
+    // Query params and dynamic route params
+    get queries() { return routerStore.queries; },
+    get params() { return routerStore.params; },
+
+    // Navigation/loading
+    get loading() { return routerStore.loading; },
+
+    push: (
+      url: string,
+      announce = true,
+      shallow = false,
+      queries?: Record<string, string | number | boolean>,
+    ) => routerStore.push(url, announce, shallow, queries),
+
+
+    replace: (
+      url: string,
+      announce = true,
+      shallow = false,
+      queries?: Record<string, string | number | boolean>,
+    ) => routerStore.replace(url, announce, shallow, queries),
+
+    back: (announce = true) => routerStore.back(announce),
+
+    // Route matching & events
     match: (pattern: string, currentPath: string) => routerStore.matchRoute(pattern, currentPath),
-    on: (type: "start" | "complete" | "change", cb: (path: string) => void) =>
-      routerStore.on(type, cb),
+    on: (type: "start" | "complete" | "change", cb: (path: string) => void) => routerStore.on(type, cb),
+    beforePopState: (cb: BeforePopCallback) => routerStore.beforePopState(cb),
+    prefetch: (url: string) => routerStore.prefetch(url),
+    resolveHref: (url: string) => routerStore.resolveHref(url),
+
+    // Extended URL info
+    get host() { return window.location.host; },
+    get hostname() { return window.location.hostname; },
+    get protocol() { return window.location.protocol; },
+    get origin() { return window.location.origin; },
+    get port() { return window.location.port; },
+    get href() { return window.location.href; },
+    get hash() { return window.location.hash; },
+    get search() { return window.location.search; },
   };
 }
 
-// -------------------- Example --------------------
-// Default global events
-const router = useRouter();
+// -------------------- Example Usage --------------------
 
-/*
-router.on("start", (path) => {
-  console.log("Navigating to:", path);
-});
+// const router = useRouter();
 
-router.on("complete", (path) => {
-  console.log("Navigation finished:", path);
-});
+// // Listen to navigation events
+// router.on("start", (path) => console.log("Start navigating to:", path));
+// router.on("change", (path) => console.log("Route changed to:", path));
+// router.on("complete", (path) => console.log("Navigation complete:", path));
 
-router.on("change", (path) => {
-  console.log("Route changed:", path);
-});
-*/
+// Guard back navigation
+// router.beforePopState((url) => {
+//   if (url === "/protected") {
+//     console.log("Navigation blocked:", url);
+//     return false; // Cancel navigation
+//   }
+// });
+
+// Navigate to a new route
+//router.push("/users/42?tab=posts");
+
+// Replace URL shallowly (no full sync)//
+//router.replace("/users/42?tab=profile", true, true);
+
+// Prefetch a route
+// router.prefetch("/about");
+
+// Resolve href
+// console.log("Resolved href:", router.resolveHref("/contact?ref=home"));
+
+// Access reactive properties
+// console.log("Current path:", router.path);
+// console.log("Query params:", router.queries);
+// console.log("Dynamic params:", router.params);
+// console.log("Full URL:", router.asPath);
+
+// Access full URL info
+// console.log(router.host);
+// console.log(router.hostname);
+// console.log(router.origin);
+// console.log(router.protocol);
+// console.log(router.port);
+// console.log(router.href);
+// console.log(router.search);
+// console.log(router.hash);

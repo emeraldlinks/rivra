@@ -1,27 +1,17 @@
 import type { Component } from 'ripple';
 import { useRouter } from '../userouter';
 import { track, effect } from 'ripple';
-import {LinkProps} from "../types.ts"
-/**
- * Props for the Link component.
- * 
- * @property href The destination href the link navigates to.
- * @property children The component to render inside the link.
- * @property onLoading Optional callback invoked when navigation starts or completes.
- * @property emitEvent Whether to emit router events for this link (default: true). If false, navigation occurs without triggering global events.
- * @property loadingComponent Optional component to render while this link is loading.
- */
-
+import { LinkProps } from "../types.ts";
 
 /**
- * Ripple-compatible Link component.
- * 
- * Handles navigation via `useRouter()` and supports per-link loading state.
- * The `isLoading` state is reactive and scoped only to this Link instance.
- * Supports optional suppression of router events for more granular control.
- * 
- * Dynamic route parameters are accessible via `useRouter().params`.
- * Query parameters are accessible via `useRouter().queries`.
+ * @component
+ * A navigation component for client-side routing.
+ * @param href - The URL path to navigate to.
+ * @param children - The content to render inside the link.
+ * @param onLoading 
+ * @param className
+ * @loadingComponent
+ * @emitEvent
  */
 export component Link({
   href,
@@ -33,47 +23,44 @@ export component Link({
 }: LinkProps) {
   const router = useRouter();
   let isLoading = track(false); // reactive per-Link loading state
+  const currentUrl = track(router.path); // track current path
 
-  /**
-   * Subscribe to router events scoped to this link.
-   * Only triggers when navigating to this link's href.
-   */
-  effect(() => {
-    const offStart = router.on("start", (path) => {
-      if (path === href) {
-        @isLoading = true;
-       
-      }
-    });
+  
 
-    const offComplete = router.on("complete", (path) => {
-      if (path === href) {
-        @isLoading = false;
-        if (onLoading) onLoading();
-      }
-    });
+const handleClick = (e: MouseEvent) => {
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+  e.preventDefault();
 
-    // Cleanup on unmount
-    return () => {
-      offStart();
-      offComplete();
-    };
-  });
+  if (!href) return;
 
-  /**
-   * Handle click events on the link.
-   * Supports meta/ctrl/shift clicks for opening in new tabs.
-   */
-  const handleClick = (e: MouseEvent) => {
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
-    e.preventDefault();
-    if (onLoading) onLoading(); // optional immediate callback
-    router.push(href, emitEvent);
-  };
+  // handle in-page anchor links
+  if (href.startsWith("#")) {
+    const el = document.querySelector(href);
+    if (el) {
+      // scroll to section smoothly
+      el.scrollIntoView({ behavior: "smooth" });
 
-    <a class={className} href={href} onClick={handleClick}>
-      <children />
-    </a>
+      // update hash in URL without page reload
+      history.pushState({}, "", href);
+    }
+    return;
+  }
+
+  if (@currentUrl === href) return;
+  if (onLoading) onLoading();
+
+  router.push(href, emitEvent);
+};
+
+
+
+  <a class={className} href={href} onClick={handleClick}>
+    <children />
+  </a>
+
+  if (@isLoading && loadingComponent) {
+    <loadingComponent />
+  }
 }
 
 export default Link;
