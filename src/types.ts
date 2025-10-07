@@ -16,5 +16,6 @@ export interface LinkProps {
   onLoading?: () => void;
   emitEvent?: boolean;
   loadingComponent?: Component;
-  className?: string
+  className?: string;
+  queries?: Record<string, string | number | boolean>;
 }

@@ -1,6 +1,6 @@
 {
   "name": "ripple-file-router",
-  "version": "0.0.11",
+  "version": "0.0.13",
   "description": "A minimal, lightweight SPA router system designed for RippleJS. Automatically generates routes from your .ripple pages, supports nested directories, includes global router loader and persistent state manager.",
   "keywords": [
     "ripple",
@@ -37,6 +37,7 @@
   "files": [
     "cli.js",
     "ReadMe.md",
+    "README.md",
     "dist",
     "vite-plugin-ripple.d.ts",
     "src/pages",

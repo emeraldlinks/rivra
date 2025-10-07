@@ -19,7 +19,7 @@ npx ripple-file-router init
 
 ## Quick Start
  
-After initiating ripple-file-router, the pages directory and the configured App.ripple file will be visible in your project src dir. The App.ripple is optional to overwrite.
+After initiating ripple-file-router, the pages directory, the routes.ts file for you app modules and the configured App.ripple file will be visible in your project src dir. The App.ripple is optional to overwrite.
 
 ### Directory Structure
 
@@ -65,25 +65,28 @@ import Link from "ripple-file-router"
 export component Navigation() {
   <nav>
     <Link href="/"><p>{"Home"}</p></Link>
-    <Link emitEvent={false} href="/about"><p>{"About"}</p></Link>
-    <Link href="/users/42/user/john"><p>{"User Profile"}</p></Link>
+    <Link emitEvent={false}  href="/about"><p>{"About"}</p></Link>
+    <Link href="/users/42/user/john" queries={{name: "John", age: 20}}><p>{"User Profile"}</p></Link>
   </nav>
 }
 ```
 
 #### Props:
 
-| Prop               | Type         | Default | Description                                   |
-| ------------------ | ------------ | ------- | --------------------------------------------- |
-| `href`              | `string`     | —       | Path to navigate to                           |
-| `children`         | `Component`  | —       | Content to render inside link                 |
-| `onLoading`        | `() => void` | —       | Callback when navigation starts               |
-| `emitEvent`        | `boolean`    | `true`  | Whether to trigger route events for this link |
-| `loadingComponent` | `Component`  | —       | Optional component to show while loading      |
+| Prop               | Type                  | Default | Description                                   |
+| ------------------ | --------------------- | ------- | --------------------------------------------- |
+| `href`             | `string`              | —       | Path to navigate to                           |
+| `children`         | `Component`           | —       | Content to render inside link                 |
+| `onLoading`        | `() => void`          | —       | Callback when navigation starts               |
+| `emitEvent`        | `boolean`             | `true`  | Whether to trigger route events for this link |
+| `loadingComponent` | `Component`           | —       | Optional component to show while loading      |
+| `className`        | `string`              | —       | Additional CSS class names for styling        |
+| `queries`          | `Record<string, any>` | —       | Optional query parameters for URLSearch       |
+
 
 ---
 
-### Router Events
+### Router And Events
 
 You can subscribe to router events if you need custom behavior:
 
@@ -95,6 +98,46 @@ const router = useRouter();
 router.on("start", path => console.log("Navigating to:", path));
 router.on("complete", path => console.log("Navigation finished:", path));
 router.on("change", path => console.log("Route changed:", path));
+
+
+
+//Guard back navigation
+router.beforePopState((url) => {
+  if (url === "/protected") {
+    console.log("Navigation blocked:", url);
+    return false; // Cancel navigation
+  }
+});
+
+// Navigate to a new route
+router.push("/users/42?tab=posts");
+router.push("/users/42?tab=posts", true, false, {name: "John", age: 20}); // path, emitEvent, shallow (partial url change), queries
+
+
+//Replace URL shallowly (no full sync)//
+router.replace("/users/42?tab=profile", true, true);
+
+// Prefetch a route
+router.prefetch("/about");
+
+// Resolve href
+console.log("Resolved href:", router.resolveHref("/contact?ref=home"));
+
+// Access reactive properties
+console.log("Current path:", router.path);
+console.log("Query params:", router.queries);
+console.log("Dynamic params:", router.params);
+console.log("Full URL:", router.asPath);
+
+// Access full URL info
+console.log(router.host);
+console.log(router.hostname);
+console.log(router.origin);
+console.log(router.protocol);
+console.log(router.port);
+console.log(router.href);
+console.log(router.search);
+console.log(router.hash);
 ```
 
 * `start`: triggered before navigation begins

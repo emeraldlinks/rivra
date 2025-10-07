@@ -3,15 +3,22 @@ import { useRouter } from '../userouter';
 import { track, effect } from 'ripple';
 import { LinkProps } from "../types.ts";
 
-/**
+/*
  * @component
  * A navigation component for client-side routing.
- * @param href - The URL path to navigate to.
- * @param children - The content to render inside the link.
- * @param onLoading 
- * @param className
- * @loadingComponent
- * @emitEvent
+ *
+ * @param {string} href - The URL path to navigate to.
+ * @param {Component} children - The content to render inside the link.
+ * @param {() => void} [onLoading] - Optional callback triggered when navigation starts.
+ * @param {string} [className] - Additional class names for styling.
+ * @param {Component} [loadingComponent] - Optional component to display while loading.
+ * @param {boolean} [emitEvent=true] - Whether to emit route events during navigation.
+ * @param {Record<string, string | number | boolean>} [queries] - Optional query parameters for URLSearch.
+ *
+ * @example
+ * <Link href="/dashboard" onLoading={() => console.log('Loading...')}>
+ *   <span>Go to Dashboard</span>
+ * </Link>
  */
 export component Link({
   href,
@@ -19,6 +26,7 @@ export component Link({
   onLoading,
   loadingComponent,
   className,
+  queries,
   emitEvent = true,
 }: LinkProps) {
   const router = useRouter();
@@ -49,7 +57,7 @@ const handleClick = (e: MouseEvent) => {
   if (@currentUrl === href) return;
   if (onLoading) onLoading();
 
-  router.push(href, emitEvent);
+  router.push(href, emitEvent, false, queries);
 };
 
 
