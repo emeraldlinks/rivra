@@ -1,6 +1,6 @@
 {
   "name": "ripple-file-router",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "A minimal, lightweight SPA router system designed for RippleJS. Automatically generates routes from your .ripple pages, supports nested directories, includes global router loader and persistent state manager.",
   "keywords": [
     "ripple",
