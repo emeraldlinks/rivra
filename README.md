@@ -189,11 +189,25 @@ export component App() {
 
 ```
 
-`GlobalLoader` reacts to router events and shows a top progress bar automatically.
 
 ---
 
 ---
+
+### A minimal reactive store that manages shared state across your app with an intuitive API. It provides reactivity, persistence, and derived state — all in under a few lines of code.
+
+| Feature                        | Description                                                                              |
+| ------------------------------ | ---------------------------------------------------------------------------------------- |
+| **`get()`**                    | Returns the current store value.                                                         |
+| **`set(next)`**                | Replaces the entire store value.                                                         |
+| **`update(partialOrFn)`**      | Merges new data into the store. Supports both object patching and callback styles.       |
+| **`subscribe(fn, selector?)`** | Reactively listens for state changes, optionally to a selected portion.                  |
+| **`derive(selector)`**         | Creates a new store derived from a specific part of another store (like computed state). |
+| **`delete(keys)`**             | Removes one or more keys from the store.                                                 |
+| **`clear()`**                  | Resets store to initial state and removes persisted data.                                |
+| **`persist` (option)**         | Automatically saves and restores state from `localStorage`.                              |
+
+
 
 -------------------- Example Stores --------------------
 ```ts
@@ -251,6 +265,9 @@ helloStore.update({ message: "Hello Ripple!" });
 
 ```ts
 import { createStore } from "ripple-file-router"
+import { track } from "ripple"
+
+const message = track("")
 
 // Create a persisted store
 const persistentHelloStore = createStore(
@@ -273,6 +290,11 @@ console.log(data.message) // Current message
 // Update the store
 persistentHelloStore.update({ message: "Updated and Persisted!" });
 
+
+// Callback update (safe addition)
+persistentHelloStore.update(prev => ({ message: prev.message + " " +  @message }));
+
+
 // Reload the page and subscribe again
 persistentHelloStore.subscribe(state => {
   console.log("After reload:", state.message);
@@ -282,7 +304,63 @@ persistentHelloStore.subscribe(state => {
 // After reload: Updated and Persisted!
 
 
+
+export const appStore = createStore(
+  {
+    user: { name: "Joe", location: "unknown", preferences: [] },
+    count: 0,
+    theme: "light",
+  },
+  { persist: true, storageKey: "appStore" }
+);
+
+
+
+// Subscribe to entire state
+appStore.subscribe(s => console.log("State changed:", s));
+
+// Watch a specific value
+appStore.watch(s => s.count, (n, o) => console.log(`Count: ${o} → ${n}`));
+
+// Use middleware for logging
+appStore.use((state, action, payload) =>
+  console.log(`[${action}]`, payload, state)
+);
+
+// Partial update
+appStore.update({ count: 1 });
+
+// Callback update (safe addition)
+appStore.update(prev => ({ count: prev.count + 1 }));
+
+// Derived store
+const themeStore = appStore.derive(s => s.theme);
+themeStore.subscribe(theme => console.log("Theme:", theme));
+
+// Clear store
+appStore.clear();
+
+
 ```
+
+
+### Here’s a concise side-by-side comparison between ripple-file-router createStore and Zustand:
+
+| Feature / Aspect         | **createStore** (ripple-file-router) | **Zustand**                              |
+| ------------------------ | ------------------------------------ | ---------------------------------------- |
+| **Size / Complexity**    | Ultra-light (~2 KB)                  | Larger, includes middleware and devtools |
+| **Reactivity Model**     | Manual `subscribe` / `derive`        | React hooks (`useStore`)                 |
+| **Selectors**            | Optional selector argument           | Built-in via hooks                       |
+| **Persistence**          | Native `persist` option              | Needs middleware plugin                  |
+| **DevTools Integration** | Coming soon                          | Built-in Redux DevTools support          |
+| **Middleware**           | Planned via `use()`                  | Full middleware API                      |
+| **Callback Updates**     | Supported: `update(prev => {...})`   | Supported: `set(state => {...})`         |
+| **Derived Stores**       | `derive(selector)`                   | Selectors or derived state               |
+| **Performance**          | Minimal overhead                     | Optimized for React, slightly heavier    |
+| **Framework Support**    | Framework-agnostic                   | React-only                               |
+| **TypeScript**           | Fully typed generics                 | Excellent TS support                     |
+| **Persistence Control**  | Built-in localStorage                | Plugin required                          |
+| **Use Case Fit**         | Libraries & multi-framework projects | React apps needing global state          |
 
 ---
 
