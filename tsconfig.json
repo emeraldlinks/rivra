@@ -9,10 +9,10 @@
     "forceConsistentCasingInFileNames": true,
     "rootDir": "src",
     "outDir": "dist",
-    "types": ["node", "send", "serve-static"],
+    "types": ["node", "send", "serve-static", "./ripple-env.d.ts"],
     "jsx": "preserve",
-    "jsxImportSource": "ripple"
+    "jsxImportSource": "ripple",
   },
-  "include": ["src", "ripple.d.ts", "**/*.ripple", "**/*.d.ts", "src/types/**/*.d.ts"]
+  "include": ["src", "ripple.d.ts", "**/*.ripple", "**/*.d.ts", "src/types/**/*.d.ts", "ripple-env.d.ts"]
 
 }

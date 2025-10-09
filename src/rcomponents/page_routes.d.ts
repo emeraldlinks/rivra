@@ -7,3 +7,9 @@ declare module "./rcomponents/page_routes.ripple" {
     enableLoader?: boolean,
   ): void;
 }
+
+
+  export declare function PageRoutes(
+    modules?: any,
+    enableLoader?: boolean,
+  ): void;

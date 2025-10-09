@@ -7,6 +7,18 @@ declare module "./rcomponents/link.ripple" {
     emitEvent?: boolean,
     onLoading?: () => void,
     loadingComponent?: Component,
-    className?: string
+    className?: string,
+    queries?: Record<string, string | number | boolean>
   ): void;
 }
+
+
+ export declare function Link(
+    href: string,
+    children: Component,
+    emitEvent?: boolean,
+    onLoading?: () => void,
+    loadingComponent?: Component,
+    className?: string,
+    queries?: Record<string, string | number | boolean>
+  ): void;
