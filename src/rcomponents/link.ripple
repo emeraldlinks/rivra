@@ -3,7 +3,7 @@ import { useRouter } from '../userouter';
 import { track, effect } from 'ripple';
 import { LinkProps } from "../types.ts";
 
-/*
+/**
  * @component
  * A navigation component for client-side routing.
  *
