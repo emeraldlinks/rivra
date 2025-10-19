@@ -17,7 +17,7 @@ import { LinkProps } from "../types.ts";
  *
  * @example
  * <Link href="/dashboard" onLoading={() => console.log('Loading...')}>
- *   <span>Go to Dashboard</span>
+ *   <span>{"Go to Dashboard"}</span>
  * </Link>
  */
 export component Link({
@@ -54,9 +54,13 @@ const handleClick = (e: MouseEvent) => {
     return;
   }
 
-  if (@currentUrl === href) return;
+  if (@currentUrl === href) {
+    window.scrollTo(0, {behavior: "auto" })
+    return
+  };
   if (onLoading) onLoading();
 
+    window.scrollTo(0, {behavior: "auto" })
   router.push(href, emitEvent, false, queries);
 };
 

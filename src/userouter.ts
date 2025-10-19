@@ -263,7 +263,7 @@ export function useRouter() {
     beforePopState: (cb: BeforePopCallback) => routerStore.beforePopState(cb),
     prefetch: (url: string) => routerStore.prefetch(url),
     resolveHref: (url: string) => routerStore.resolveHref(url),
-
+    isActive: (url: string)=> url === routerStore.path,
     // Extended URL info
     get host() { return window.location.host; },
     get hostname() { return window.location.hostname; },
@@ -273,18 +273,19 @@ export function useRouter() {
     get href() { return window.location.href; },
     get hash() { return window.location.hash; },
     get search() { return window.location.search; },
+    
   };
 }
 
 // -------------------- Example Usage --------------------
 
-// const router = useRouter();
+//  const router = useRouter();
 
 // // Listen to navigation events
 // router.on("start", (path) => console.log("Start navigating to:", path));
 // router.on("change", (path) => console.log("Route changed to:", path));
 // router.on("complete", (path) => console.log("Navigation complete:", path));
-
+//  router.isActive("/about")
 // Guard back navigation
 // router.beforePopState((url) => {
 //   if (url === "/protected") {

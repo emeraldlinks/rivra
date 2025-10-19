@@ -1,62 +1,47 @@
-
 import { track } from 'ripple';
 
+export default component Home() {
+    let count = track(0);
 
-export default component Home(){
-    <div class='container'>
-		<h1>{'Welcome to Ripple!'}</h1>
-		<div class='counter'>
-			let count = track(2000);
+    <div class="container" style={`display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; text-align: center; font-family: sans-serif;`}>
+        <main class="main" style={`flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;`}>
+            <img src="https://www.ripplejs.com/ripple-logo-horizontal.png" lazy alt="" width={260} style={`margin-bottom: 2rem;`} />
+            <h1 class="title" style={`font-size: 2.5rem; margin-bottom: 1rem;`}>
+                {'Welcome to '}<span class="highlight" style={`color: #0070f3;`}>{"Ripple!"}</span>
+            </h1>
 
-			<button onClick={() => @count--}>{'-'}</button>
-			<span class='count'>{@count}</span>
-			<button onClick={() => @count++}>{'+'}</button>
-		</div>
-		<div>
-			<p>{'This is a basic Ripple application template.'}</p>
-			<p>
-				{'Edit '}
-				<code>{'src/App.ripple'}</code>
-				{' to get started.'}
-			</p>
-		</div>
-	</div>
+            <div class="counter" style={`display: flex; align-items: center; margin: 1rem 0;`}>
+                <button class="counter-btn" style={`background: #0070f3; color: white; border:  none; border-radius: 13px ; padding: 0.5rem 1rem; font-size: 1.5rem; cursor: pointer;`} onClick={() => @count--}>{'–'}</button>
+                <span class="count" style={`margin: 0 1rem; font-size: 1.5rem; font-weight: bold;`}>{@count}</span>
+                <button class="counter-btn" style={`background: #0070f3; color: white; border: none; border-radius: 13px ; padding: 0.5rem 1rem; font-size: 1.5rem; cursor: pointer;`} onClick={() => @count++}>{'+'}</button>
+            </div>
 
-  <style>
-    .container {
-      text-align: center;
-      font-family: "Arial", sans-serif;
-    }
+            <p class="description" style={`margin-top: 1rem; color: #555;`}>
+                {'Get started by editing '}<code class="code" style={`background: #f5f5f5; padding: 0.2rem 0.5rem; border-radius: 4px;`}>{"src/App.ripple"}</code>
+            </p>
 
-    p {
-      margin: 12px 0;
-      font-family: "Arial", sans-serif;
-    }
+            <div class="grid" style={`display: grid; grid-template-columns: repeat(2, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem;`}>
+                <a class="card" href="https://ripplejs.com/docs/introduction" target="_blank" style={`padding: 1.5rem; text-decoration: none; border: 1px solid #eaeaea; border-radius: 10px; transition: 0.3s;`}>
+                    <h2 style={`margin-bottom: 0.5rem; color: #0070f3;`}>{'Documentation →'}</h2>
+                    <p style={`color: #555;`}>{'Learn how to build with Ripple'}</p>
+                </a>
+                <a class="card" href="https://github.com/trueadm/ripple" target="_blank" style={`padding: 1.5rem; text-decoration: none; border: 1px solid #eaeaea; border-radius: 10px; transition: 0.3s;`}>
+                    <h2 style={`margin-bottom: 0.5rem; color: #0070f3;`}>{'GitHub →'}</h2>
+                    <p style={`color: #555;`}>{'View the source code'}</p>
+                </a>
+            </div>
+        </main>
 
-    code {
-      background: #f4f4f4;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: "Courier New", monospace;
-      color: #333;
-    }
+        <footer class="footer" style={`margin-top: 3rem; font-size: 0.9rem; color: #888;`}>
+            <a href="https://ripplejs.com" target="_blank" rel="noopener noreferrer" style={`text-decoration: none; color: inherit;`}>
+                {'Powered by '}<span class="footer-logo" style={`color: #0070f3; font-weight: bold;`}>{"Ripple"}</span>
+            </a>
+        </footer>
 
-    button {
-      font-size: 1.5em;
-      padding: 6px 12px;
-      margin: 0 6px;
-      cursor: pointer;
-      border: none;
-      font-family: "Courier New", monospace;
-    }
-
-    button:hover {
-      background-color: #e0e0e0;
-    }
-
-    .count {
-      margin: 0 12px;
-      font-size: 1.5em;
-    }
-  </style>
+        <style>
+            .some-element{
+                /* some style here */
+            }
+        </style>
+    </div>
 }
