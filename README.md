@@ -17,13 +17,7 @@ Not just a router—it's a complete toolkit from **ripple-tooling**, making stat
 ![downloads](https://img.shields.io/npm/dt/ripple-file-router)
 ![license](https://img.shields.io/npm/l/ripple-file-router)
 <img src="https://www.ripplejs.com/ripple-logo-horizontal.png" alt="Ripple Logo" width="100" style="margin-left:30px; height:30px;" />
-<svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="50" cy="50" r="22" fill="none" stroke="#00f0ff" stroke-width="2"/>
-  <circle cx="50" cy="50" r="32" fill="none" stroke="#00f0ff" stroke-width="1.5" stroke-dasharray="6 3"/>
-  <rect x="38" y="38" width="24" height="28" fill="#00f0ff" rx="2"/>
-  <line x1="41" y1="45" x2="59" y2="45" stroke="#121212" stroke-width="2" stroke-linecap="round"/>
-  <line x1="41" y1="52" x2="59" y2="52" stroke="#121212" stroke-width="2" stroke-linecap="round"/>
-  <line x1="41"
+
 
 
 
