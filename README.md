@@ -4,7 +4,7 @@
 
 
 # Ripple-file-router 
-**(Minimal Ripple tool kit. Not just a router)**
+**(Minimal Ripple tool kit not just a router)**
 
 
 
@@ -584,4 +584,3 @@ appStore.clear();
 
 
 
-# ripple-tools

@@ -1,7 +1,7 @@
 {
-  "name": "ripple-file-router",
-  "version": "0.0.19",
-  "description": "A minimal, lightweight SPA router system designed for RippleJS. Automatically generates routes from your .ripple pages, supports nested directories, includes global router loader and persistent state manager.",
+  "name": "ripple-tools",
+  "version": "0.0.1",
+  "description": "A lightweight, file-based router for Ripple.js that automatically generates page routes from your .ripple  files, supports nested directories, and includes a global loader plus a persistent state manager. Not just a router—it's a complete toolkit from **ripple-tooling**, making state management, storage, and app tooling easier and fully accessible with zero dependencies.",
   "keywords": [
     "ripple",
     "router",
@@ -12,15 +12,15 @@
     "tooling"
   ],
   "bin": {
-    "ripple-file-router init": "./cli.js"
+    "ripple-tools init": "./cli.js"
   },
-  "homepage": "https://github.com/emeraldlinks/ripple-file-router#readme",
+  "homepage": "https://github.com/emeraldlinks/ripple-tools#readme",
   "bugs": {
-    "url": "https://github.com/emeraldlinks/ripple-file-router/issues"
+    "url": "https://github.com/emeraldlinks/ripple-tools/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/emeraldlinks/ripple-file-router.git"
+    "url": "git+https://github.com/emeraldlinks/ripple-tools.git"
   },
   "license": "MIT",
   "author": "Joseph Christopher",
@@ -32,7 +32,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.js"
-    }
+    },
+    "./stores": "./dist/index.js"
   },
   "files": [
     "cli.js",

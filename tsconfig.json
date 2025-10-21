@@ -13,6 +13,6 @@
     "jsx": "preserve",
     "jsxImportSource": "ripple",
   },
-  "include": ["src", "ripple.d.ts", "**/*.ripple", "**/*.d.ts", "src/types/**/*.d.ts", "ripple-env.d.ts"]
+  "include": ["src", "ripple.d.ts", "**/*.ripple", "**/*.d.ts", "src/types/**/*.d.ts", "ripple-env.d.ts",]
 
 }

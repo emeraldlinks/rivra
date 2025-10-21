@@ -2,6 +2,9 @@ export * from "./createFileRoutes";
 export * from "./userouter";
 export * from "./types";
 export * from "./store";
+export * from "./stores"
+
+
 import _Link from "./rcomponents/link.ripple";
 import _PageRoutes from "./rcomponents/page_routes.ripple";
 import _Router  from "./rcomponents/router.ripple";
