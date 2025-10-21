@@ -1,6 +1,6 @@
 {
-  "name": "ripple-tools",
-  "version": "0.0.1",
+  "name": "ripple-tools-full",
+  "version": "0.0.2",
   "description": "A lightweight, file-based router for Ripple.js that automatically generates page routes from your .ripple  files, supports nested directories, and includes a global loader plus a persistent state manager. Not just a router—it's a complete toolkit from **ripple-tooling**, making state management, storage, and app tooling easier and fully accessible with zero dependencies.",
   "keywords": [
     "ripple",
@@ -12,7 +12,7 @@
     "tooling"
   ],
   "bin": {
-    "ripple-tools init": "./cli.js"
+    "ripple-tools-full init": "./cli.js"
   },
   "homepage": "https://github.com/emeraldlinks/ripple-tools#readme",
   "bugs": {
