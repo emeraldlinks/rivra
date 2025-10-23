@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
       fileName: 'index',
     },
     rollupOptions: {
-      external: ['ripple', /^ripple\//],
+      external: ['ripple', "node_modules", /^ripple\//],
     },
   },
   root: path.resolve(__dirname),

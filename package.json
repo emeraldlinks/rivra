@@ -1,6 +1,6 @@
 {
   "name": "rivra",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Rivra — a lightweight full-stack framework built on Ripple, combining file-based routing, reactive state management, and full front-to-back tooling with zero configuration.",
   "keywords": [
     "ripple",
@@ -36,7 +36,11 @@
       "types": "./dist/stores.d.ts",
       "import": "./dist/stores.js",
       "require": "./dist/stores.js"
-    }
+    },
+    "./server": {
+       "import": "./dist/packages/server.js",
+       "types": "./dist/packages/server.d.ts"
+      }
   },
   "types": "dist/index.d.ts",
   "files": [
@@ -55,7 +59,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "nodemon": "^3.1.10",
+    "@fastify/middie": "^9.0.3",
     "ripple": "^0.2.140",
     "vite": "^7.1.6",
     "vite-plugin-ripple": "^0.2.56"
@@ -64,6 +68,8 @@
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
     "fastify": "^5.6.1",
-    "typescript": "^5.6.2"
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }

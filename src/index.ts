@@ -2,11 +2,9 @@
 export * from "./userouter";
 export * from "./types";
 export * from "./store";
-export * from "./stores"
+export * from "./stores";
 
 import type { FastifyReply, FastifyRequest, FastifyInstance } from "fastify";
-
-
 
 export type Req = FastifyRequest;
 export type Reply = FastifyReply;
@@ -18,17 +16,11 @@ export type App = FastifyInstance;
 
 // import type { Component } from "ripple";
 
-
 // export const Router = _Router as unknown as (
 //     props: {
 //         routes: any
 //     }
 // ) => void
-
-
-
-
-
 
 // /**
 //  * A navigation component for client-side routing.
@@ -57,7 +49,6 @@ export type App = FastifyInstance;
 //     queries?: Record<string, string | number | boolean>;
 //   }
 // ) => void;
-
 
 //  export const  PageRoutes = _PageRoutes as unknown as (
 //     props: {
