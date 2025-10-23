@@ -1,7 +1,7 @@
 {
-  "name": "ripple-tools-full",
-  "version": "0.0.5",
-  "description": "A lightweight, file-based router for Ripple.js that automatically generates page routes from your .ripple  files, supports nested directories, and includes a global loader plus a persistent state manager. Not just a router—it's a complete toolkit from **ripple-tooling**, making state management, storage, and app tooling easier and fully accessible with zero dependencies.",
+  "name": "rivra",
+  "version": "0.0.1",
+  "description": "Rivra — a lightweight full-stack framework built on Ripple, combining file-based routing, reactive state management, and full front-to-back tooling with zero configuration.",
   "keywords": [
     "ripple",
     "router",
@@ -12,29 +12,33 @@
     "tooling"
   ],
   "bin": {
-    "ripple-tools-full init": "./cli.js"
+    "rivra init": "./cli.js"
   },
-  "homepage": "https://github.com/emeraldlinks/ripple-tools#readme",
+  "homepage": "https://github.com/emeraldlinks/rivra#readme",
   "bugs": {
-    "url": "https://github.com/emeraldlinks/ripple-tools/issues"
+    "url": "https://github.com/emeraldlinks/rivra/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/emeraldlinks/ripple-tools.git"
+    "url": "git+https://github.com/emeraldlinks/rivra.git"
   },
   "license": "MIT",
   "author": "Joseph Christopher",
   "type": "module",
   "main": "./dist/index.js",
-  "types": "dist/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
-    },
-    "./stores": "./dist/index.js"
+  ".": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js",
+    "require": "./dist/index.js"
   },
+  "./stores": {
+    "types": "./dist/stores.d.ts",
+    "import": "./dist/stores.js",
+    "require": "./dist/stores.js"
+  }
+},
+"types": "dist/index.d.ts",
   "files": [
     "cli.js",
     "ReadMe.md",
@@ -51,13 +55,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "ripple": "^0.2.109",
+    "ripple": "^0.2.140",
     "vite": "^7.1.6",
     "vite-plugin-ripple": "^0.2.56"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
+    "fastify": "^5.6.1",
     "typescript": "^5.6.2"
   }
 }

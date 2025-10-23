@@ -44,7 +44,7 @@ async function main() {
   // ---------------------------------------------
   try {
     console.log("📦 Running `npx ripple-file-router init`...");
-    execSync("npx ripple-file-router init", { stdio: "inherit" });
+    execSync("npx ripple-file-router init --y", { stdio: "inherit" });
     console.log("✅ ripple-file-router initialized successfully!");
   } catch (err) {
     console.error("❌ Failed to run ripple-file-router init:", err.message);
@@ -157,23 +157,23 @@ start();`;
 
   // tsconfig.json
   const tsconfig = {
-    compilerOptions: {
-      target: "ESNext",
-      module: "ESNext",
-      lib: ["ES2022", "DOM", "DOM.Iterable"],
-      allowSyntheticDefaultImports: true,
-      esModuleInterop: true,
-      moduleResolution: "node",
-      jsx: "preserve",
-      jsxImportSource: "ripple",
-      noEmit: true,
-      isolatedModules: true,
-      types: ["node"],
-       allowImportingTsExtensions: false,
-      kipLibCheck: true,
-      noEmitOnError: false
-    },
-  };
+  compilerOptions: {
+    target: "ESNext",
+    module: "NodeNext",
+    lib: ["ES2022", "DOM", "DOM.Iterable"],
+    allowSyntheticDefaultImports: true,
+    esModuleInterop: true,
+    moduleResolution: "nodenext",
+    jsx: "preserve",
+    jsxImportSource: "ripple",
+    noEmit: true,
+    isolatedModules: true,
+    types: ["node"],
+    allowImportingTsExtensions: false,
+    skipLibCheck: true,
+    noEmitOnError: false
+  },
+};
   fs.writeFileSync(path.join(projectDir, "tsconfig.json"), JSON.stringify(tsconfig, null, 2));
   console.log("✅ tsconfig.json created");
 

@@ -1,5 +1,11 @@
 import { Component } from "ripple";
+import type { FastifyReply, FastifyRequest, FastifyInstance } from "fastify";
 
+
+
+export type Req = FastifyRequest;
+export type Reply = FastifyReply;
+export type App = FastifyInstance;
 
 export interface Route {
   path: string;
