@@ -153,7 +153,7 @@ async function main() {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
     pkg.scripts = pkg.scripts || {};
     pkg.scripts.start = "node dist/server/index.js";
-    pkg.scripts.dev = "ts-node --esm server.ts";
+    pkg.scripts.dev = "npx nodemon --watch src/packages --ext ts,js --exec 'ts-node --esm' server.ts";
     pkg.scripts.build = "vite build && tsc -p tsconfig.build.json";
     pkg.scripts.serve = "vite preview";
     fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
