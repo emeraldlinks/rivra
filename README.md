@@ -12,7 +12,7 @@
 Not just a router — Rivra is a complete toolkit combining routing, state management, storage, and full-stack app tooling, all fully accessible
 
 ##
-![npm](https://img.shields.io/npm/v/ripple-file-router)
+![npm](https://img.shields.io/npm/v/rivra)
 ![downloads](https://img.shields.io/npm/dt/ripple-file-router)
 ![license](https://img.shields.io/npm/l/ripple-file-router)
 <img src="https://www.ripplejs.com/ripple-logo-horizontal.png" alt="Ripple Logo" width="100" style="margin-left:30px; height:30px;" />

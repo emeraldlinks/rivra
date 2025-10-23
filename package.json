@@ -27,18 +27,18 @@
   "type": "module",
   "main": "./dist/index.js",
   "exports": {
-  ".": {
-    "types": "./dist/index.d.ts",
-    "import": "./dist/index.js",
-    "require": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./stores": {
+      "types": "./dist/stores.d.ts",
+      "import": "./dist/stores.js",
+      "require": "./dist/stores.js"
+    }
   },
-  "./stores": {
-    "types": "./dist/stores.d.ts",
-    "import": "./dist/stores.js",
-    "require": "./dist/stores.js"
-  }
-},
-"types": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "cli.js",
     "ReadMe.md",
@@ -55,6 +55,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "nodemon": "^3.1.10",
     "ripple": "^0.2.140",
     "vite": "^7.1.6",
     "vite-plugin-ripple": "^0.2.56"
