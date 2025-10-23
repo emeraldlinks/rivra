@@ -8,9 +8,9 @@
 
 
 
-A lightweight, file-based router for **Ripple.js** that automatically generates page routes from your ***.ripple***  files, supports nested directories, and includes a global loader plus a persistent state manager. 
+A lightweight, file-based router for **Ripple.js** that automatically generates page routes from your ***.ripple***  files, supports nested directories, and includes a global loader plus a persistent state manager and additionally, full stack with fastify. 
 #
-Not just a router—it's a complete toolkit from **ripple-tooling and ripple-file-router**, making state management, storage, and app tooling easier and fully accessible with zero dependencies.
+Not just a router—it's a complete toolkit from **ripple-tooling and ripple-file-router**, making state management, storage, and app tooling easier and fully accessible with zero dependencies. 
 
 ##
 ![npm](https://img.shields.io/npm/v/ripple-file-router)

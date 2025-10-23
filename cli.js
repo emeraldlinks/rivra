@@ -169,7 +169,9 @@ start();`;
       noEmit: true,
       isolatedModules: true,
       types: ["node"],
-      allowImportingTsExtensions: true,
+       allowImportingTsExtensions: false,
+      kipLibCheck: true,
+      noEmitOnError: false
     },
   };
   fs.writeFileSync(path.join(projectDir, "tsconfig.json"), JSON.stringify(tsconfig, null, 2));
@@ -189,7 +191,7 @@ start();`;
   const pkgPath = path.join(projectDir, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
   pkg.scripts = pkg.scripts || {};
-  pkg.scripts.start = "vite";
+  pkg.scripts.start = "node dist/server/index.js";
   pkg.scripts.dev = "ts-node --esm index.ts";
   pkg.scripts.build = "vite build && tsc -p tsconfig.build.json";
   pkg.scripts.serve = "vite preview";
@@ -198,7 +200,8 @@ start();`;
 
   // Install dependencies
   console.log("📦 Installing dependencies...");
-  execSync("npm install fastify @fastify/middie ripple-file-router get-port vite ts-node -D", { stdio: "inherit" });
+  execSync("npm install fastify @fastify/middie ripple-file-router get-port vite", { stdio: "inherit" });
+  execSync("npm install ts-node @types/connect -D", { stdio: "inherit" });
   console.log("✅ Dependencies installed");
 
   console.log("🎉 Ripple Tools Full initialized successfully (Full-stack mode)!");
