@@ -3,14 +3,13 @@
 
 
 
-# Ripple-tools-full 
-**(Minimal Ripple tool kit not just a router)**
+# Rivra
+**(Minimal Ripple tool kit. Not just a router)**
 
 
 
-A lightweight, file-based router for **Ripple.js** that automatically generates page routes from your ***.ripple***  files, supports nested directories, and includes a global loader plus a persistent state manager and additionally, full stack with fastify. 
-#
-Not just a router—it's a complete toolkit from **ripple-tooling and ripple-file-router**, making state management, storage, and app tooling easier and fully accessible with zero dependencies. 
+# Router + full-stack description: 
+Not just a router — Rivra is a complete toolkit combining routing, state management, storage, and full-stack app tooling, all fully accessible
 
 ##
 ![npm](https://img.shields.io/npm/v/ripple-file-router)
@@ -27,26 +26,26 @@ Not just a router—it's a complete toolkit from **ripple-tooling and ripple-fil
 ## Installation
 
 ```bash
-npm install ripple-tools-full
-npx ripple-tools-full init  
+npm install rivra
+npx rivra init  
 ```
 
 or
 
 ```bash
-yarn add ripple-tools-full
-npx ripple-tools-full init  
+yarn add rivra
+npx rivra init  
 ```
 
 ## Quick Start
  
-After initiating ripple-tools-full which has all the ripple-file-router components, the pages directory, the routes.ts file for your app modules and the configured App.ripple file will be visible in your project src dir. The App.ripple is optional to overwrite.
+After initiating **Rivra** which has all the ripple-file-router components, the pages directory,  /api (if selected full stack),  the routes.ts file for your app modules and the configured App.ripple file will be visible in your project src dir. The App.ripple is optional to overwrite.
 
 ### Directory Structure
 
-Here's an example `pages/` directory:
+Here's an example `src/pages/` directory:
 
-```
+```bash
 pages/
 ├── index.ripple        # Home page
 ├── about.ripple        # About page
@@ -57,6 +56,38 @@ pages/
                 └── comments/
 ```
 
+Here's an `api/` directory:
+
+```bash
+api/
+├── index.ts                 # Root API entry point (can load all modules)
+├── posts.ts                 # Top-level posts routes
+└── users/
+    └── [id]/                # Dynamic user ID
+        └── user/
+            └── [username]/  # Dynamic username
+                └── comments/
+                    └── index.ts   # User comments routes
+
+```
+
+```ts
+import type { Reply, Req, App } from "rivra"
+
+import type {Req, Reply, App} from "mivra"
+export default async function postAPi(app: App) {
+  app.get("/", async (req: Req, reply: Reply) => {
+
+    const param = req.params
+    const queries = req.query
+
+
+    return ({ message: "some dynamic route", params: param, query: queries })
+  })
+}
+
+```
+
 Dynamic segments use `[param]` notation like `[id]` or `[username]`.
 
 ---
@@ -64,7 +95,7 @@ Dynamic segments use `[param]` notation like `[id]` or `[username]`.
 ### App Component
 
 ```ts
-import {PageRoutes} from "ripple-tools-full"
+import {PageRoutes} from "ripple-file-router"
 import { modules } from "./routes";
 
 export component App() {
@@ -81,7 +112,7 @@ That's it! Your routing is now set up. `PageRoutes` automatically reads your `pa
 Use the `Link` component for navigation:
 
 ```ts
-import Link from "ripple-tools-full"
+import Link from "ripple-file-router"
 
 export component Navigation() {
   <nav>
@@ -112,7 +143,7 @@ export component Navigation() {
 You can subscribe to router events if you need custom behavior:
 
 ```ts
-import { useRouter } from "ripple-tools-full"
+import { useRouter } from "ripple-file-router"
 
 const router = useRouter();
 
@@ -174,7 +205,7 @@ You can opt out of events per `Link` with `emitEvent={false}`.
 Access route params and queries in any component:
 
 ```ts
-import { useRouter } from "ripple-tools-full"
+import { useRouter } from "ripple-file-router"
 
 export component UserProfile() {
   const router = useRouter();
@@ -201,7 +232,7 @@ you can disable it with props ```ts
 ``` 
 
 ```ts
-import {PageRoutes} from "ripple-tools-full"
+import {PageRoutes} from "ripple-file-router-full"
 import { modules } from "./routes";
 
 export component App() {
@@ -255,7 +286,7 @@ Here are extra two simple Hello World store examples for getting started and exp
 
 ### Store without persist (default)
 ```ts
-import { createStore } from "ripple-tools-full"
+import { createStore } from "rivra"
 
 // Create a simple store
 const helloStore = createStore({ message: "Hello World!" });
@@ -285,7 +316,7 @@ helloStore.update({ message: "Hello Ripple!" });
 ### Store with persist
 
 ```ts
-import { createStore } from "ripple-tools-full"
+import { createStore } from "rivra"
 import { track } from "ripple"
 
 const message = track("")
@@ -365,9 +396,9 @@ appStore.clear();
 ```
 
 
-### Here’s a concise side-by-side comparison between ripple-tools-full createStore and Zustand:
+### Here’s a concise side-by-side comparison between Rivra createStore and Zustand:
 
-| Feature / Aspect         | **createStore** (ripple-tools-full) | **Zustand**                              |
+| Feature / Aspect         | **createStore** (Rivra) | **Zustand**                              |
 | ------------------------ | ------------------------------------ | ---------------------------------------- |
 | **Size / Complexity**    | Ultra-light (~2 KB)                  | Larger, includes middleware and devtools |
 | **Reactivity Model**     | Manual `subscribe` / `derive`        | React hooks (`useStore`)                 |
@@ -578,3 +609,4 @@ appStore.clear();
 
 
 
+# rivra
