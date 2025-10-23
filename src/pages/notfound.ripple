@@ -1,4 +1,4 @@
- import { Link } from 'ripple-file-router';
+ import { Link } from 'ripple-tools-full';
 
 export default component NotFound404() {
 

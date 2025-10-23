@@ -37,7 +37,7 @@ export component Router({ routes }: RouterProp) {
       @currentPath = window.location.pathname;
       @matched = null; // reset before recalculating
     };
-
+    console.log("matched: ", @matched)
     window.addEventListener("popstate", handler);
     window.addEventListener("pushstate", handler); 
     window.addEventListener("replacestate", handler);
