@@ -88,6 +88,49 @@ export default async function postAPi(app: App) {
 
 ```
 
+
+### Rivra middlewares/plugins for fastify
+
+Rivra allows you to customize the server behaviours by leveraging on Fastify hooks and plugins.  There are some times you may want to extend function.
+
+----
+```sql
+
+plugins/
+ ├── middleware/
+ │    ├── cors.ts                 → global middleware (order=1)
+ │    └── helmet.ts               → global middleware (order=2)
+ ├── auth.md.ts                   → middleware only for /auth/*
+ ├── auth.pg.ts                   → /auth routes
+ ├── users/
+ │    ├── users.md.ts             → middleware only for /users/*
+ │    └── index.ts                → /users routes
+ └── logger.ts                    → global plugin
+```
+```ts
+export const order = 2; // order from 1-10 gives you ability to prioritize the order which your hooks run.
+
+export default async function (app) {
+  app.addHook('onRequest', async (req, reply) => {
+    reply.header('X-Powered-By', 'Rivra');
+  });
+}
+
+
+
+```
+
+
+
+| Type              | Example File                    | Prefix Applied | Loaded As  | Order                      |
+| ----------------- | ------------------------------- | -------------- | ---------- | -------------------------- |
+| Global middleware | `/plugins/middleware/logger.ts` | none           | middleware | before all plugins         |
+| Route middleware  | `/plugins/auth/auth.md.ts`      | `/auth`        | middleware | after global, before route |
+| Prefixed plugin   | `/plugins/auth.pg.ts`           | `/auth`        | plugin     | normal                     |
+| Folder plugin     | `/plugins/payments/index.ts`    | `/payments`    | plugin     | normal                     |
+| Global plugin     | `/plugins/cors.ts`              | none           | plugin     | normal                     |
+
+
 Dynamic segments use `[param]` notation like `[id]` or `[username]`.
 
 ---

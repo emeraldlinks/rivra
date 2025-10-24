@@ -1,31 +1,51 @@
-# ripple-file-router
 
-A minimal, file-based routing system for **Ripple.js**. Automatically generates routes from your .ripple pages, supports nested directories, includes global router loader and persistent state manager. Structure your `pages/` directory and start routing with a single component.
 
+
+
+
+# Rivra
+**(Minimal Ripple tool kit. Not just a router)**
+
+
+
+# Router + full-stack description: 
+Not just a router — Rivra is a complete toolkit combining routing, state management, storage, and full-stack app tooling, all fully accessible
+
+##
+![npm](https://img.shields.io/npm/v/rivra)
+![downloads](https://img.shields.io/npm/dt/ripple-file-router)
+![license](https://img.shields.io/npm/l/ripple-file-router)
+<img src="https://www.ripplejs.com/ripple-logo-horizontal.png" alt="Ripple Logo" width="100" style="margin-left:30px; height:30px;" />
+
+
+
+
+
+##
 
 ## Installation
 
 ```bash
-npm install ripple-file-router
-npx ripple-file-router init  
+npm install rivra
+npx rivra init  
 ```
 
 or
 
 ```bash
-yarn add ripple-file-router
-npx ripple-file-router init  
+yarn add rivra
+npx rivra init  
 ```
 
 ## Quick Start
  
-After initiating ripple-file-router, the pages directory, the routes.ts file for you app modules and the configured App.ripple file will be visible in your project src dir. The App.ripple is optional to overwrite.
+After initiating **Rivra** which has all the ripple-file-router components, the pages directory,  /api (if selected full stack),  the routes.ts file for your app modules and the configured App.ripple file will be visible in your project src dir. The App.ripple is optional to overwrite.
 
 ### Directory Structure
 
-Here's an example `pages/` directory:
+Here's an example `src/pages/` directory:
 
-```
+```bash
 pages/
 ├── index.ripple        # Home page
 ├── about.ripple        # About page
@@ -35,6 +55,81 @@ pages/
             └── [username]/
                 └── comments/
 ```
+
+Here's an `api/` directory:
+
+```bash
+api/
+├── index.ts                 # Root API entry point (can load all modules)
+├── posts.ts                 # Top-level posts routes
+└── users/
+    └── [id]/                # Dynamic user ID
+        └── user/
+            └── [username]/  # Dynamic username
+                └── comments/
+                    └── index.ts   # User comments routes
+
+```
+
+```ts
+import type { Reply, Req, App } from "rivra"
+
+import type {Req, Reply, App} from "mivra"
+export default async function postAPi(app: App) {
+  app.get("/", async (req: Req, reply: Reply) => {
+
+    const param = req.params
+    const queries = req.query
+
+
+    return ({ message: "some dynamic route", params: param, query: queries })
+  })
+}
+
+```
+
+
+### Rivra middlewares/plugins for fastify
+
+Rivra allows you to customize the server behaviours by leveraging on Fastify hooks and plugins.  There are some times you may want to extend function.
+
+----
+```sql
+
+plugins/
+ ├── middleware/
+ │    ├── cors.ts                 → global middleware (order=1)
+ │    └── helmet.ts               → global middleware (order=2)
+ ├── auth.md.ts                   → middleware only for /auth/*
+ ├── auth.pg.ts                   → /auth routes
+ ├── users/
+ │    ├── users.md.ts             → middleware only for /users/*
+ │    └── index.ts                → /users routes
+ └── logger.ts                    → global plugin
+```
+```ts
+export const order = 2; // order from 1-10 gives you ability to prioritize the order which your hooks run.
+
+export default async function (app) {
+  app.addHook('onRequest', async (req, reply) => {
+    reply.header('X-Powered-By', 'Rivra');
+  });
+}
+
+
+
+```
+
+
+
+| Type              | Example File                    | Prefix Applied | Loaded As  | Order                      |
+| ----------------- | ------------------------------- | -------------- | ---------- | -------------------------- |
+| Global middleware | `/plugins/middleware/logger.ts` | none           | middleware | before all plugins         |
+| Route middleware  | `/plugins/auth/auth.md.ts`      | `/auth`        | middleware | after global, before route |
+| Prefixed plugin   | `/plugins/auth.pg.ts`           | `/auth`        | plugin     | normal                     |
+| Folder plugin     | `/plugins/payments/index.ts`    | `/payments`    | plugin     | normal                     |
+| Global plugin     | `/plugins/cors.ts`              | none           | plugin     | normal                     |
+
 
 Dynamic segments use `[param]` notation like `[id]` or `[username]`.
 
@@ -180,7 +275,7 @@ you can disable it with props ```ts
 ``` 
 
 ```ts
-import {PageRoutes} from "ripple-file-router"
+import {PageRoutes} from "ripple-file-router-full"
 import { modules } from "./routes";
 
 export component App() {
@@ -234,7 +329,7 @@ Here are extra two simple Hello World store examples for getting started and exp
 
 ### Store without persist (default)
 ```ts
-import { createStore } from "ripple-file-router"
+import { createStore } from "rivra"
 
 // Create a simple store
 const helloStore = createStore({ message: "Hello World!" });
@@ -264,7 +359,7 @@ helloStore.update({ message: "Hello Ripple!" });
 ### Store with persist
 
 ```ts
-import { createStore } from "ripple-file-router"
+import { createStore } from "rivra"
 import { track } from "ripple"
 
 const message = track("")
@@ -344,9 +439,9 @@ appStore.clear();
 ```
 
 
-### Here’s a concise side-by-side comparison between ripple-file-router createStore and Zustand:
+### Here’s a concise side-by-side comparison between Rivra createStore and Zustand:
 
-| Feature / Aspect         | **createStore** (ripple-file-router) | **Zustand**                              |
+| Feature / Aspect         | **createStore** (Rivra) | **Zustand**                              |
 | ------------------------ | ------------------------------------ | ---------------------------------------- |
 | **Size / Complexity**    | Ultra-light (~2 KB)                  | Larger, includes middleware and devtools |
 | **Reactivity Model**     | Manual `subscribe` / `derive`        | React hooks (`useStore`)                 |
@@ -364,6 +459,182 @@ appStore.clear();
 
 ---
 
+
+## Minimal IndexDB Manager with Zero Dependencies.
+
+ 📘 Example Usage
+ -------------------------------------------------------------------------- 
+
+   ✅ Minimal Example
+ ```ts
+ const userStore = createIndexDBStore({
+  storeName: 'users',
+ });
+ await userStore.add({ id: 'u1', name: 'Joseph', age: 22 });
+ const all = await userStore.getAll();
+  console.log(all);
+ ```
+ 
+   ✅ Full Configuration Example
+   ```ts
+   interface User {
+     id: string;
+     name: string;
+     age: number;
+   }
+  
+   const userStore = createIndexDBStore<User>({
+     dbName: "MyAppDB",
+     storeName: "users",
+     keyPath: "id",
+     version: 1,
+   });
+  
+   // ➕ Add record
+   await userStore.add({ id: 'u1', name: 'Ada', age: 45 });
+  
+   // 🔁 Update record by key or object
+   await userStore.update('u1', { age: 46 });
+  
+   // 🔍 Get a record by key
+   const user = await userStore.get('u1');
+   console.log('Single user:', user);
+  
+   // 📦 Get all records
+   const allUsers = await userStore.getAll();
+   console.log('All users:', allUsers);
+  
+   // ❌ Remove record by ID
+   await userStore.remove('u1');
+  
+   // 🧹 Clear all records
+   await userStore.clear();
+  
+   // 🔎 Query using a filter function
+   const adults = await userStore.query(u => u.age > 30);
+   console.log('Adults:', adults);
+  
+   // 👂 Subscribe to store changes (reactive)
+   const unsubscribe = userStore.subscribe(state => {
+     console.log('Store changed:', state.items);
+   });
+  
+   // 👁️ Watch specific property or subset of data
+   const watchAdults = userStore.deriveQuery(items => items.filter(u => u.age > 30));
+   watchAdults.subscribe(adults => console.log('Adults updated:', adults));
+  
+   // 🔦 Filter (where)
+   const namedJohn = await userStore.where({ name: 'John' });
+   console.log('Users named John:', namedJohn);
+  
+   // 🥇 Get first matching record
+   const firstUser = await userStore.first({ age: 46 });
+   console.log('First matching user:', firstUser);
+  
+   // 🔍 Find by ID (alias for get)
+   const found = await userStore.find('u1');
+   console.log('Found user:', found);
+  
+   // 🧩 Put (alias for update)
+   await userStore.put({ id: 'u1', name: 'Ada', age: 50 });
+  
+   // 💳 Perform custom transaction
+   await userStore.transaction(tx => {
+     const store = tx.objectStore('users');
+     store.add({ id: 'u2', name: 'Ken', age: 35 });
+   });
+  
+   // 🧭 Watch specific user reactively
+   const watchUser = userStore.deriveQuery(items => items.find(u => u.id === 'u1') || null);
+   watchUser.subscribe(u => console.log('u1 changed:', u));
+  
+   // 🧹 Unsubscribe from store updates
+   unsubscribe();
+   ```
+  
+   ✅ Multi-Store Example (using IndexDBManager)
+   ```ts
+   interface User {
+     id: string;
+     name: string;
+   }
+  
+   interface Post {
+     id: string;
+     title: string;
+   }
+  
+   // Create manager
+   const db = new IndexDBManager("MyAppDB");
+  
+   // Create multiple stores
+   const users = db.createStore<User>("users", "id");
+   const posts = db.createStore<Post>("posts", "id");
+  
+   // Add data
+   await users.add({ id: "u1", name: "Joe" });
+   await posts.add({ id: "p1", title: "Hello World" });
+  
+   // Query data
+   const allUsers = await users.getAll();
+   const allPosts = await posts.getAll();
+  
+   console.log(allUsers, allPosts);
+  
+   // Watch updates
+   users.subscribe(state => console.log("Users changed:", state.items));
+   posts.subscribe(state => console.log("Posts changed:", state.items));
+   ```
+
+ ## IndexDB with offline/online live database synchronization
+ 
+ This is experimental currently. This api allows you make your apps offline first.
+
+   ```ts
+  const userStore = createIndexDBStore<User>({
+    dbName: "MyAppDB",
+    storeName: "users",
+    keyPath: "id",
+    version: 1,
+    sync: {
+      endpoint: "https://api.example.com/users",
+      async push(item, action) {
+        // simple example using fetch
+        if (action === "add") await fetch(this.endpoint!, { method: "POST", body: JSON.stringify(item) });
+        if (action === "update") await fetch(`${this.endpoint}/${(item as any).id}`, { method: "PUT", body: JSON.stringify(item) });
+        if (action === "remove") await fetch(`${this.endpoint}/${(item as any).id}`, { method: "DELETE" });
+      },
+      async pull() {
+        const res = await fetch("https://api.example.com/users");
+        return res.json();
+      },
+      interval: 15000,
+      autoSync: true,
+      onOffline: () => console.log("User store offline"),
+      onOnline: () => console.log("User store online"),
+    },
+  });
+ 
+  // Multi-store manager usage with global + per-store callbacks:
+ 
+  const db = new IndexDBManager("MyAppDB", 1, {
+    onOffline: () => console.log("Global offline"),
+    onOnline: () => console.log("Global online"),
+  });
+ 
+  // per-store callbacks override global if provided
+  const users = db.createStore<User>("users", "id", {
+    sync: {
+      onOffline: () => console.log("Users store offline"),
+      onOnline: () => console.log("Users store online"),
+    }
+  });
+ 
+  const posts = db.createStore<{ id: string; title: string }>("posts", "id");
+
+  ```
+
+
 ### Features
 
 * File-based routing
@@ -373,4 +644,12 @@ appStore.clear();
 * Reactive `Link` component with optional loading UI
 * Global progress loader
 * Minimal setup—just structure `pages/`
+* Minimal indexDB manager with zero dependencies.
 * Zustand like global state management available in and outside components
+
+
+
+
+
+
+# rivra

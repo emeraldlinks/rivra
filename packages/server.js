@@ -4,7 +4,7 @@ import { createServer as createViteServer } from "vite";
 import { pathToFileURL, fileURLToPath } from "url";
 import fs from "fs";
 import path from "path";
-import registerPlugins from "./plugin_manager";
+import registerPlugins from "./plugin_manager.js";
 
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -45,11 +45,13 @@ async function registerApiRoutes(app, dir, prefix = "") {
 }
 
 export async function StartServer() {
-  const app = Fastify();
+  const app = Fastify({routerOptions: {
+    ignoreTrailingSlash: true
+  }});
   await app.register(fastifyMiddie);
 
-  await registerApiRoutes(app, apiDir);
   await registerPlugins(app, pluginDir)
+  await registerApiRoutes(app, apiDir);
 
   const vite = await createViteServer({
     root: projectRoot,
