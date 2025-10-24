@@ -277,6 +277,8 @@ export function useRouter() {
   };
 }
 
+export default useRouter
+
 // -------------------- Example Usage --------------------
 
 //  const router = useRouter();

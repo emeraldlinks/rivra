@@ -80,23 +80,35 @@ async function main() {
     const nodemonPath = path.join(projectDir, "nodemon.json");
     const serverDir = path.join(projectDir, "api");
     const apiPath = path.join(serverDir, "index.ts");
+    const middlewarePath   = path.join(projectDir, "middleware.ts")
     fs.mkdirSync(serverDir, { recursive: true });
 
     // index.ts — Full-stack Dev Server
-    const indexContent = `import { StartServer } from "rivra/server"
+    const indexContent = `
+    // @ts-ignore
+    import { StartServer } from "rivra/server"
 
-(async () => {
-  await StartServer();
-})();
-`;
+
+    (async () => {
+      const app = await StartServer();
+      // app.register(...) //register plugins and add custom instance behaviours.
+    })();`;
 
     fs.writeFileSync(indexPath, indexContent);
     console.log("✅ index.ts created");
 
     // api/index.ts
-    const apiContent = `export default async function registerApi(app) {
-  app.get("/", async () => ({ message: "Hello from Ripple full-stack!" }));
-}`;
+    const apiContent = `
+        import type {App, Req, Reply  } from "rivra"
+
+        export default async function registerApi(app: App) { 
+      
+      app.get("/", async (req: Req, reply: Reply) => {
+
+        return ({ message: "Hello from Ripple full-stack!" })
+      })
+        
+    }`;
     fs.writeFileSync(apiPath, apiContent);
     console.log("✅ api/index.ts created");
 
@@ -153,7 +165,7 @@ async function main() {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
     pkg.scripts = pkg.scripts || {};
     pkg.scripts.start = "node dist/server/index.js";
-    pkg.scripts.dev = "npx nodemon --watch src/packages --ext ts,js --exec 'ts-node --esm' server.ts";
+    pkg.scripts.dev = "npx nodemon --watch api --ext ts,js --exec 'ts-node --esm' server.ts";
     pkg.scripts.build = "vite build && tsc -p tsconfig.build.json";
     pkg.scripts.serve = "vite preview";
     fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));

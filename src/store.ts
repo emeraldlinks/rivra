@@ -221,6 +221,8 @@ export function createStore<T extends object>(
   };
 }
 
+export default createStore
+
 // -------------------- Example Stores --------------------
 
  /**

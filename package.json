@@ -1,6 +1,6 @@
 {
   "name": "rivra",
-  "version": "0.0.2",
+  "version": "0.0.5",
   "description": "Rivra — a lightweight full-stack framework built on Ripple, combining file-based routing, reactive state management, and full front-to-back tooling with zero configuration.",
   "keywords": [
     "ripple",

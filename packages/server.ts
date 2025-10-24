@@ -5,10 +5,12 @@ import { pathToFileURL, fileURLToPath } from "url";
 import fs from "fs";
 import path from "path";
 import type {  FastifyInstance } from "fastify";
+import registerPlugins from "./plugin_manager";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = process.cwd();
 const apiDir = path.join(projectRoot, "api");
+const pluginDir = path.join(projectRoot, "plugins")
 
 async function registerApiRoutes(app: FastifyInstance, dir: string, prefix = "") {
   if (!fs.existsSync(dir)) return;
@@ -41,10 +43,12 @@ async function registerApiRoutes(app: FastifyInstance, dir: string, prefix = "")
 }
 
 export async function StartServer() {
-  const app = Fastify({ ignoreTrailingSlash: true });
+  const app = Fastify();
+  
   await app.register(fastifyMiddie);
 
   await registerApiRoutes(app, apiDir);
+  await registerPlugins(app, pluginDir)
 
   const vite = await createViteServer({
     root: projectRoot,
@@ -65,9 +69,12 @@ export async function StartServer() {
   const port = 3000;
   app.listen({ port }, (err, address) => {
     if (err) throw err;
-    console.log(`🚀 Ripple Full-Stack Dev running on ${address}`);
+    console.log(`🚀 Rivra Full-Stack Dev running on ${address}`);
     console.log(app.printRoutes());
   });
+    
+    return  app
+
 }
 
 export default  StartServer
