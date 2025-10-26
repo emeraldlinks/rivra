@@ -7,12 +7,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "dist",
     "types": ["node", "send", "serve-static", "./ripple-env.d.ts"],
     "jsx": "preserve",
     "jsxImportSource": "ripple",
   },
-  "include": ["src", "ripple.d.ts", "**/*.ripple", "**/*.d.ts", "src/types/**/*.d.ts", "ripple-env.d.ts", "src/packages",]
+  "include": ["packages/**/*.ts", "src", "ripple.d.ts", "**/*.ripple", "**/*.d.ts", "src/types/**/*.d.ts", "ripple-env.d.ts", "src/packages", "cli.ts"]
 
 }

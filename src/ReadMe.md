@@ -23,6 +23,15 @@ Not just a router — Rivra is a complete toolkit combining routing, state manag
 
 ##
 
+## Creating New Project
+
+```bash
+npx rivra create my-app // wrapper around npm create ripple my-app.
+
+```
+
+###### For existing ripple projects use the installation and init
+
 ## Installation
 
 ```bash
@@ -36,6 +45,8 @@ or
 yarn add rivra
 npx rivra init  
 ```
+
+
 
 ## Quick Start
  

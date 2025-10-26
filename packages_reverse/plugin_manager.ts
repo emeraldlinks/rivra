@@ -31,7 +31,7 @@ export default async function registerPlugins(
 
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
-  // 1. Load global middleware first (if any)
+  // 🔹 1. Load global middleware first (if any)
   const middlewareDir = path.join(dir, "middleware");
   if (
     fs.existsSync(middlewareDir) &&
@@ -41,7 +41,7 @@ export default async function registerPlugins(
     await collectPlugins(pluginTasks, middlewareDir, undefined, true);
   }
 
-  // 2. Collect all other plugins and route middleware
+  // 🔹 2. Collect all other plugins and route middleware
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.name === "middleware") continue; // Skip global middleware dir
@@ -57,7 +57,7 @@ export default async function registerPlugins(
     }
   }
 
-  // 3. Sort by `order` and register in sequence
+  // 🔹 3. Sort by `order` and register in sequence
   pluginTasks.sort((a, b) => a.order - b.order);
 
   for (const task of pluginTasks) {
@@ -68,7 +68,7 @@ export default async function registerPlugins(
     }
 
     console.log(
-      `${task.isMiddleware ? " Middleware" : " Plugin"} registered: ${
+      `${task.isMiddleware ? "🧩 Middleware" : "✅ Plugin"} registered: ${
         task.fileName
       }${task.prefix ? ` → ${task.prefix}` : ""} (order: ${task.order})`
     );

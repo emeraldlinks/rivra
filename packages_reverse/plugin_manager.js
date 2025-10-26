@@ -1,4 +1,3 @@
-import type { FastifyInstance } from "fastify";
 import fs from "fs";
 import path from "path";
 import { pathToFileURL } from "url";
@@ -14,34 +13,22 @@ import { pathToFileURL } from "url";
  * - Folder-based plugins: auto-prefixed by folder name
  * - Order control: export const order = <number>
  */
-export default async function registerPlugins(
-  app: FastifyInstance,
-  dir: string
-) {
+export default async function registerPlugins(app, dir) {
   if (!fs.existsSync(dir)) return;
 
   // All collected tasks (plugins + middleware)
-  const pluginTasks: {
-    handler: any;
-    prefix?: string;
-    order: number;
-    isMiddleware: boolean;
-    fileName: string;
-  }[] = [];
+  const pluginTasks = [];
 
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
-  // 1. Load global middleware first (if any)
+  //  1. Load global middleware first (if any)
   const middlewareDir = path.join(dir, "middleware");
-  if (
-    fs.existsSync(middlewareDir) &&
-    fs.statSync(middlewareDir).isDirectory()
-  ) {
+  if (fs.existsSync(middlewareDir) && fs.statSync(middlewareDir).isDirectory()) {
     console.log("⚙️ Loading global middleware...");
     await collectPlugins(pluginTasks, middlewareDir, undefined, true);
   }
 
-  // 2. Collect all other plugins and route middleware
+  //  2. Collect all other plugins and route middleware
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.name === "middleware") continue; // Skip global middleware dir
@@ -57,7 +44,7 @@ export default async function registerPlugins(
     }
   }
 
-  // 3. Sort by `order` and register in sequence
+  //  3. Sort by `order` and register in sequence
   pluginTasks.sort((a, b) => a.order - b.order);
 
   for (const task of pluginTasks) {
@@ -68,7 +55,7 @@ export default async function registerPlugins(
     }
 
     console.log(
-      `${task.isMiddleware ? " Middleware" : " Plugin"} registered: ${
+      `${task.isMiddleware ? "🧩 Middleware" : "✅ Plugin"} registered: ${
         task.fileName
       }${task.prefix ? ` → ${task.prefix}` : ""} (order: ${task.order})`
     );
@@ -76,12 +63,7 @@ export default async function registerPlugins(
 }
 
 /** Recursively collect plugins for ordered registration */
-async function collectPlugins(
-  tasks: any[],
-  dir: string,
-  prefix?: string,
-  isMiddleware = false
-) {
+async function collectPlugins(tasks, dir, prefix, isMiddleware = false) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
   for (const entry of entries) {
@@ -104,12 +86,7 @@ async function collectPlugins(
 }
 
 /** Collect a single plugin or middleware */
-async function collectSinglePlugin(
-  tasks: any[],
-  filePath: string,
-  prefix?: string,
-  isMiddleware = false
-) {
+async function collectSinglePlugin(tasks, filePath, prefix, isMiddleware = false) {
   const fileName = path.basename(filePath);
 
   try {
@@ -144,7 +121,7 @@ async function collectSinglePlugin(
 
     // Add to registration queue
     let wrappedHandler = handler;
-   if (typeof handler === "function" && !handler[Symbol.for('skipFastifyPluginWrap')]) {
+if (typeof handler === "function" && !handler[Symbol.for('skipFastifyPluginWrap')]) {
   try {
     const fp = (await import("fastify-plugin")).default;
     wrappedHandler = fp(handler, {
@@ -157,14 +134,9 @@ async function collectSinglePlugin(
 }
 
 
-    // Add to registration queue
-    tasks.push({
-      handler: wrappedHandler,
-      prefix,
-      order,
-      isMiddleware,
-      fileName,
-    });
+// Add to registration queue
+tasks.push({ handler: wrappedHandler, prefix, order, isMiddleware, fileName });
+
   } catch (err) {
     console.error(`❌ Failed to load plugin "${fileName}":`, err);
   }
