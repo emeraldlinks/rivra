@@ -226,45 +226,81 @@ class RouterStore {
 
 export const routerStore = new RouterStore();
 
-/** useRouter hook */
-export function useRouter() {
+export interface Router {
+  readonly path: string;
+  readonly asPath: string;
+  readonly queries: Record<string, string>;
+  readonly params: Record<string, string>;
+  readonly loading: boolean;
+  push: (
+    url: string,
+    announce?: boolean,
+    shallow?: boolean,
+    queries?: Record<string, string | number | boolean>
+  ) => void;
+  replace: (
+    url: string,
+    announce?: boolean,
+    shallow?: boolean,
+    queries?: Record<string, string | number | boolean>
+  ) => void;
+  back: (announce?: boolean) => void;
+  match: (pattern: string, currentPath: string) => true | null;
+  on: (type: "start" | "complete" | "change", cb: (path: string) => void) => () => void;
+  beforePopState: (cb: (url: string) => boolean | void) => () => void;
+  prefetch: (url: string) => Promise<void>;
+  resolveHref: (url: string) => string;
+  isActive: (url: string) => boolean;
+  readonly host: string;
+  readonly hostname: string;
+  readonly protocol: string;
+  readonly origin: string;
+  readonly port: string;
+  readonly href: string;
+  readonly hash: string;
+  readonly search: string;
+}
+
+/**
+ * useRouter hook
+ * 
+ * Provides full client-side navigation and routing capabilities.
+ * 
+ * @example
+ * ```ts
+ * import { useRouter } from "rivra/router";
+ * 
+ * const router = useRouter();
+ * router.push("/users/42?tab=posts");
+ * 
+ * router.replace("/users/42?tab=profile", true, true);
+ * router.prefetch("/about");
+ * 
+ * router.on("start", (path) => console.log("Start navigating to:", path));
+ * router.on("change", (path) => console.log("Route changed:", path));
+ * router.on("complete", (path) => console.log("Navigation complete:", path));
+ * 
+ * router.beforePopState((url) => {
+ *   if (url === "/protected") return false; // Block navigation
+ * });
+ * ```
+ */
+export function useRouter(): Router {
   return {
-    // Basic path info
     get path() { return routerStore.path; },
     get asPath() { return routerStore.asPath; },
-
-    // Query params and dynamic route params
     get queries() { return routerStore.queries; },
     get params() { return routerStore.params; },
-
-    // Navigation/loading
     get loading() { return routerStore.loading; },
-
-    push: (
-      url: string,
-      announce = true,
-      shallow = false,
-      queries?: Record<string, string | number | boolean>,
-    ) => routerStore.push(url, announce, shallow, queries),
-
-
-    replace: (
-      url: string,
-      announce = true,
-      shallow = false,
-      queries?: Record<string, string | number | boolean>,
-    ) => routerStore.replace(url, announce, shallow, queries),
-
+    push: (...args) => routerStore.push(...args),
+    replace: (...args) => routerStore.replace(...args),
     back: (announce = true) => routerStore.back(announce),
-
-    // Route matching & events
-    match: (pattern: string, currentPath: string) => routerStore.matchRoute(pattern, currentPath),
-    on: (type: "start" | "complete" | "change", cb: (path: string) => void) => routerStore.on(type, cb),
-    beforePopState: (cb: BeforePopCallback) => routerStore.beforePopState(cb),
-    prefetch: (url: string) => routerStore.prefetch(url),
-    resolveHref: (url: string) => routerStore.resolveHref(url),
-    isActive: (url: string)=> url === routerStore.path,
-    // Extended URL info
+    match: (pattern, currentPath) => routerStore.matchRoute(pattern, currentPath),
+    on: (type, cb) => routerStore.on(type, cb),
+    beforePopState: (cb) => routerStore.beforePopState(cb),
+    prefetch: (url) => routerStore.prefetch(url),
+    resolveHref: (url) => routerStore.resolveHref(url),
+    isActive: (url) => url === routerStore.path,
     get host() { return window.location.host; },
     get hostname() { return window.location.hostname; },
     get protocol() { return window.location.protocol; },
@@ -273,11 +309,10 @@ export function useRouter() {
     get href() { return window.location.href; },
     get hash() { return window.location.hash; },
     get search() { return window.location.search; },
-    
   };
 }
 
-export default useRouter
+export default useRouter;
 
 // -------------------- Example Usage --------------------
 

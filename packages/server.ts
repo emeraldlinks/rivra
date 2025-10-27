@@ -7,16 +7,24 @@ import path, { dirname } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import registerPlugins from "./plugin_manager.js";
 import { render } from "ripple/server";
+import getPort from "get-port"
+  const vite_port = await getPort({port: [24678, 24679, 23678, 24658, 23178, 23000, 2178, 22278]})
+
+
+const isProd = process.env.NODE_ENV === "production";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = process.cwd();
-
-const apiDir = path.join(projectRoot, "api");
-const pluginDir = path.join(projectRoot, "plugins");
-const srcPath = path.join(projectRoot, "src");
-const RippleAppPath = path.join(srcPath, "App.ripple");
 const distDir = path.join(projectRoot, "dist");
 const distServerDir = path.join(distDir, "server");
+const apiDir = isProd
+  ? path.join(distServerDir, "api")
+  : path.join(projectRoot, "api");
+const pluginDir = isProd
+  ? path.join(distServerDir, "plugins") // dist/server/plugins
+  : path.join(projectRoot, "plugins");
+const srcPath = path.join(projectRoot, "src");
+const RippleAppPath = path.join(srcPath, "App.ripple");
 
 // --------------------- API ROUTES ---------------------
 async function registerApiRoutes(app: FastifyInstance, dir: string, prefix = ""): Promise<void> {
@@ -64,7 +72,7 @@ export async function StartServer(): Promise<FastifyInstance> {
     // --------------------- DEVELOPMENT MODE ---------------------
     const vite: ViteDevServer = await createViteServer({
       root: projectRoot,
-      server: { middlewareMode: true, hmr: { port: 24678 } },
+      server: { middlewareMode: true, hmr: { port: vite_port } },
     });
 
     app.use((req, res, next) => {
@@ -131,7 +139,7 @@ export async function StartServer(): Promise<FastifyInstance> {
 }
 
 
-  const port = Number(process.env.PORT) || 3000;
+  const port = await getPort({port: [3000, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009, 4000, 4001, 4002]})
   app.listen({ port, host: "0.0.0.0" }, (err, address) => {
     if (err) throw err;
     console.log(`Rivra ${isProd ? "Production" : "Development + SSR"} server running on ${address}`);

@@ -13,12 +13,14 @@ Not just a router — Rivra is a complete toolkit combining routing, state manag
 
 ##
 ![npm](https://img.shields.io/npm/v/rivra)
-![downloads](https://img.shields.io/npm/dt/ripple-file-router)
-![license](https://img.shields.io/npm/l/ripple-file-router)
+![downloads](https://img.shields.io/npm/dt/rivra)
+![license](https://img.shields.io/npm/l/rivra)
 <img src="https://www.ripplejs.com/ripple-logo-horizontal.png" alt="Ripple Logo" width="100" style="margin-left:30px; height:30px;" />
 
+-----
+ [for any problems you may have been facing recently regarding the build and start commands, typings, server and plugins, they have been fixed. However I'm still observng for any errors. ]
 
-
+---
 
 
 ##
@@ -50,7 +52,7 @@ npx rivra init
 
 ## Quick Start
  
-After initiating **Rivra** which has all the ripple-file-router components, the pages directory,  /api (if selected full stack),  the routes.ts file for your app modules and the configured App.ripple file will be visible in your project src dir. The App.ripple is optional to overwrite.
+After initiating **Rivra** which has all the rivra routing components, the pages directory,  /api (if selected full stack),  the routes.ts file for your app modules and the configured App.ripple file will be visible in your project src dir. The App.ripple is optional to overwrite.
 
 ### Directory Structure
 
@@ -149,7 +151,7 @@ Dynamic segments use `[param]` notation like `[id]` or `[username]`.
 ### App Component
 
 ```ts
-import {PageRoutes} from "ripple-file-router"
+import {PageRoutes} from "rivra/router"
 import { modules } from "./routes";
 
 export component App() {
@@ -166,7 +168,7 @@ That's it! Your routing is now set up. `PageRoutes` automatically reads your `pa
 Use the `Link` component for navigation:
 
 ```ts
-import Link from "ripple-file-router"
+import Link from "rivra/router"
 
 export component Navigation() {
   <nav>
@@ -197,7 +199,7 @@ export component Navigation() {
 You can subscribe to router events if you need custom behavior:
 
 ```ts
-import { useRouter } from "ripple-file-router"
+import { useRouter } from "rivra/router"
 
 const router = useRouter();
 
@@ -259,7 +261,7 @@ You can opt out of events per `Link` with `emitEvent={false}`.
 Access route params and queries in any component:
 
 ```ts
-import { useRouter } from "ripple-file-router"
+import { useRouter } from "rivra/router"
 
 export component UserProfile() {
   const router = useRouter();
@@ -286,7 +288,7 @@ you can disable it with props ```ts
 ``` 
 
 ```ts
-import {PageRoutes} from "ripple-file-router-full"
+import {PageRoutes} from "rivra/router"
 import { modules } from "./routes";
 
 export component App() {

@@ -1,4 +1,5 @@
-declare module "ripple-file-router" {
+declare module "rivra" {
+import type { FastifyReply, FastifyRequest, FastifyInstance } from "fastify";
   import type { Component } from "ripple";
 
   export interface LinkProps {
@@ -14,4 +15,7 @@ declare module "ripple-file-router" {
   export const Link: Component<LinkProps>;
   export const Router: Component<any>;
   export const PageRoutes: Component<any>;
+  export type Req = FastifyRequest;
+export type Reply = FastifyReply;
+export type App = FastifyInstance;
 }
