@@ -81,6 +81,9 @@ export async function StartServer(): Promise<FastifyInstance> {
     });
 
     app.get("/*", async (req: FastifyRequest, reply: FastifyReply) => {
+       if (req.url.startsWith("/api") || /\.[a-zA-Z0-9]+$/.test(req.url || "")) {
+    return reply.callNotFound(); // Let Fastify handle 404s
+  }
       try {
         let template = fs.readFileSync(path.resolve(projectRoot, "index.html"), "utf-8");
         template = await vite.transformIndexHtml(req.url || "/", template);
@@ -139,7 +142,15 @@ export async function StartServer(): Promise<FastifyInstance> {
 }
 
 
-  const port = await getPort({port: [3000, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009, 4000, 4001, 4002]})
+let port = 3000;
+
+if (isProd && process.env.PORT) {
+  port = Number(process.env.PORT);
+} else {
+  const getPort = (await import("get-port")).default;
+  port = await getPort({ port: [3000, 3001, 3002, 4000, 4001] });
+}
+
   app.listen({ port, host: "0.0.0.0" }, (err, address) => {
     if (err) throw err;
     console.log(`Rivra ${isProd ? "Production" : "Development + SSR"} server running on ${address}`);
