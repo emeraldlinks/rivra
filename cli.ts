@@ -221,7 +221,7 @@ async function startDev() {
   console.log("Starting Rivra development server...");
   try {
     execSync(
-      `npx nodemon --watch api --watch plugins --ext ts,js --exec 'ts-node --esm server.ts'`,
+      `npx cross-env NODE_NO_WARNINGS=1 NODE_OPTIONS="--no-deprecation" npx nodemon --watch api --watch plugins --ext ts,js --exec "node --loader ts-node/esm server.ts"`,
       { stdio: "inherit" }
     );
   } catch (err: any) {
@@ -424,7 +424,7 @@ export default function (req: Req, res: Reply) {
   execSync("npm install fastify @fastify/middie get-port vite", {
     stdio: "inherit",
   });
-  execSync("npm install ts-node @types/connect -D", { stdio: "inherit" });
+  execSync("npm install ts-node @types/connect cross-env -D", { stdio: "inherit" });
 
   console.log(`
 Rivra full-stack initialized successfully!

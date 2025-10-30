@@ -43,10 +43,13 @@ export function createStore<T extends object>(
 ) {
   const { persist = false, storageKey } = options;
 
+  // Check if running in browser for SSR safety
+  const canUseStorage = typeof window !== "undefined" && persist && storageKey;
+
   // Load persisted state if enabled
   let value: T = { ...initial };
-  if (persist && storageKey) {
-    const stored = localStorage.getItem(storageKey);
+  if (canUseStorage) {
+    const stored = localStorage.getItem(storageKey!);
     if (stored) {
       try {
         value = JSON.parse(stored);
@@ -57,6 +60,8 @@ export function createStore<T extends object>(
   const subs = new Set<Subscriber<T>>();
   const watchers: { selector: (state: T) => any; cb: (newVal: any, oldVal: any) => void }[] = [];
   const middlewares: Middleware<T>[] = [];
+
+  let prevValue = { ...value };
 
   /** Notify all subscribers and watchers of a state change */
   function notify(action?: string, payload?: any) {
@@ -69,13 +74,11 @@ export function createStore<T extends object>(
     middlewares.forEach(fn => fn(value, action, payload));
   }
 
-  let prevValue = { ...value };
-
   /** Persist current state to localStorage if enabled */
   function persistToStorage() {
-    if (persist && storageKey) {
+    if (canUseStorage) {
       try {
-        localStorage.setItem(storageKey, JSON.stringify(value));
+        localStorage.setItem(storageKey!, JSON.stringify(value));
       } catch (err) {
         console.log("error saving to localStorage: ", err);
       }
@@ -104,7 +107,10 @@ export function createStore<T extends object>(
    */
   function update(partial: Partial<T>): void;
   function update(partialFn: (prev: T) => Partial<T>): void;
-  function update(partialOrFn: Partial<T> | ((prev: T) => Partial<T>), action = "update") {
+  function update(
+    partialOrFn: Partial<T> | ((prev: T) => Partial<T>),
+    action = "update"
+  ) {
     prevValue = value;
     const patch =
       typeof partialOrFn === "function" ? partialOrFn(value) : partialOrFn;
@@ -126,9 +132,9 @@ export function createStore<T extends object>(
   function clear() {
     prevValue = { ...value };
     value = { ...initial };
-    if (persist && storageKey) {
+    if (canUseStorage) {
       try {
-        localStorage.removeItem(storageKey);
+        localStorage.removeItem(storageKey!);
       } catch (err) {
         console.warn("Failed to clear persisted store:", err);
       }
@@ -221,48 +227,24 @@ export function createStore<T extends object>(
   };
 }
 
-export default createStore
+export default createStore;
 
 // -------------------- Example Stores --------------------
 
- /**
-   *This provides a basic store for your app like theme, user etc. it's an example which you can delete;
-   */
+/**
+ * This provides a basic store for your app like theme, user etc. 
+ * It's an example which you can delete;
+ */
 export const appStore = createStore(
   {
     user: { name: "Joe", location: "unknown", preferences: [] },
     count: 0,
-    theme: "light",
+    theme: "dark",
   },
   { persist: true, storageKey: "appStore" }
 );
 
 export const routeStore = createStore(
-   { path: "/" }, { persist: true, storageKey: "routeStore" }
-   );
-
-// /* -------------------- Example Usage -------------------- */
-
-// // Subscribe to entire state
-// appStore.subscribe(s => console.log("State changed:", s));
-
-// // Watch a specific value
-// appStore.watch(s => s.count, (n, o) => console.log(`Count: ${o} → ${n}`));
-
-// // Use middleware for logging
-// appStore.use((state, action, payload) =>
-//   console.log(`[${action}]`, payload, state)
-// );
-
-// // Partial update
-// appStore.update({ count: 1 });
-
-// // Callback update (safe addition)
-// appStore.update(prev => ({ count: prev.count + 1 }));
-
-// // Derived store
-// const themeStore = appStore.derive(s => s.theme);
-// themeStore.subscribe(theme => console.log("Theme:", theme));
-
-// // Clear store
-// appStore.clear();
+  { path: "/" },
+  { persist: true, storageKey: "routeStore" }
+);

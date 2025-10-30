@@ -43,12 +43,15 @@ class RouterStore {
   private beforePop: BeforePopCallback[] = [];
 
   constructor() {
-    this.syncWithLocation();
-    window.addEventListener("popstate", () => this.handlePopState());
+    if (typeof window !== "undefined") {
+      this.syncWithLocation();
+      window.addEventListener("popstate", () => this.handlePopState());
+    }
   }
 
   /** Handle browser back/forward events */
   private handlePopState() {
+    if (typeof window === "undefined") return;
     for (const fn of this.beforePop) {
       const result = fn(this.asPath);
       if (result === false) return; // Cancel navigation
@@ -61,6 +64,7 @@ class RouterStore {
    * @param announce Whether to emit events (default: true)
    */
   private syncWithLocation(announce = true) {
+    if (typeof window === "undefined") return;
     this.path = window.location.pathname;
     this.queries = Object.fromEntries(new URLSearchParams(window.location.search).entries());
     this.params = {};
@@ -89,7 +93,6 @@ class RouterStore {
       this.listeners[type] = this.listeners[type].filter(fn => fn !== cb);
     };
   }
-
 
   /** Builds a complete URL from path + query object */
   private buildUrl(path: string, queries?: Record<string, any>): string {
@@ -135,7 +138,6 @@ class RouterStore {
    * @param announce Emit events? (default: true)
    * @param shallow Update URL without full sync? (default: false)
    */
-
   replace(
     url: string,
     announce = true,
@@ -146,9 +148,9 @@ class RouterStore {
     this.navigate(fullUrl, "replace", announce, shallow);
   }
 
-
   /** Go back in browser history */
   back(announce = true) {
+    if (typeof window === "undefined") return;
     this.loading = true;
     if (announce) this.emit("start", this.path);
     history.back();
@@ -157,6 +159,8 @@ class RouterStore {
 
   /** Internal navigation helper */
   private navigate(url: string, method: "push" | "replace", announce = true, shallow = false) {
+    if (typeof window === "undefined") return;
+
     this.loading = true;
     if (announce) this.emit("start", url);
 
@@ -208,19 +212,23 @@ class RouterStore {
 
   /** Simulate prefetching a route */
   prefetch(url: string) {
+    if (typeof window === "undefined") return Promise.resolve();
     console.log("Prefetching route:", url);
     return Promise.resolve();
   }
 
   /** Resolve relative href to absolute path + query */
   resolveHref(href: string) {
+    if (typeof window === "undefined") return href;
     const url = new URL(href, window.location.origin);
     return url.pathname + url.search;
   }
 
   /** Full path with query string */
   get asPath() {
-    return window.location.pathname + window.location.search;
+    return typeof window !== "undefined"
+      ? window.location.pathname + window.location.search
+      : this.path;
   }
 }
 
@@ -265,6 +273,39 @@ export interface Router {
  * useRouter hook
  * 
  * Provides full client-side navigation and routing capabilities.
+ */
+export function useRouter(): Router {
+  return {
+    get path() { return routerStore.path; },
+    get asPath() { return routerStore.asPath; },
+    get queries() { return routerStore.queries; },
+    get params() { return routerStore.params; },
+    get loading() { return routerStore.loading; },
+    push: (...args) => routerStore.push(...args),
+    replace: (...args) => routerStore.replace(...args),
+    back: (announce = true) => routerStore.back(announce),
+    match: (pattern, currentPath) => routerStore.matchRoute(pattern, currentPath),
+    on: (type, cb) => routerStore.on(type, cb),
+    beforePopState: (cb) => routerStore.beforePopState(cb),
+    prefetch: (url) => routerStore.prefetch(url),
+    resolveHref: (url) => routerStore.resolveHref(url),
+    isActive: (url) => url === routerStore.path,
+    get host() { return typeof window !== "undefined" ? window.location.host : ""; },
+    get hostname() { return typeof window !== "undefined" ? window.location.hostname : ""; },
+    get protocol() { return typeof window !== "undefined" ? window.location.protocol : ""; },
+    get origin() { return typeof window !== "undefined" ? window.location.origin : ""; },
+    get port() { return typeof window !== "undefined" ? window.location.port : ""; },
+    get href() { return typeof window !== "undefined" ? window.location.href : ""; },
+    get hash() { return typeof window !== "undefined" ? window.location.hash : ""; },
+    get search() { return typeof window !== "undefined" ? window.location.search : ""; }
+  };
+}
+
+
+/**
+ * useRouter hook
+ * 
+ * Provides full client-side navigation and routing capabilities.
  * 
  * @example
  * ```ts
@@ -285,32 +326,7 @@ export interface Router {
  * });
  * ```
  */
-export function useRouter(): Router {
-  return {
-    get path() { return routerStore.path; },
-    get asPath() { return routerStore.asPath; },
-    get queries() { return routerStore.queries; },
-    get params() { return routerStore.params; },
-    get loading() { return routerStore.loading; },
-    push: (...args) => routerStore.push(...args),
-    replace: (...args) => routerStore.replace(...args),
-    back: (announce = true) => routerStore.back(announce),
-    match: (pattern, currentPath) => routerStore.matchRoute(pattern, currentPath),
-    on: (type, cb) => routerStore.on(type, cb),
-    beforePopState: (cb) => routerStore.beforePopState(cb),
-    prefetch: (url) => routerStore.prefetch(url),
-    resolveHref: (url) => routerStore.resolveHref(url),
-    isActive: (url) => url === routerStore.path,
-    get host() { return window.location.host; },
-    get hostname() { return window.location.hostname; },
-    get protocol() { return window.location.protocol; },
-    get origin() { return window.location.origin; },
-    get port() { return window.location.port; },
-    get href() { return window.location.href; },
-    get hash() { return window.location.hash; },
-    get search() { return window.location.search; },
-  };
-}
+  
 
 export default useRouter;
 
