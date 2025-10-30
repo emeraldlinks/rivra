@@ -7,17 +7,22 @@ import path, { dirname } from "path";
 import { fileURLToPath, pathToFileURL } from "url";
 import registerPlugins from "./plugin_manager.js";
 import { render } from "ripple/server";
-import getPort from "get-port";
+import getPort from "get-port"
+  const vite_port = await getPort({port: [24678, 24679, 23678, 24658, 23178, 23000, 2178, 22278]})
 
-const vite_port = await getPort({ port: [24678, 24679, 23678, 24658, 23178, 23000, 2178, 22278] });
+
 const isProd = process.env.NODE_ENV === "production";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = process.cwd();
 const distDir = path.join(projectRoot, "dist");
 const distServerDir = path.join(distDir, "server");
-const apiDir = isProd ? path.join(distServerDir, "api") : path.join(projectRoot, "api");
-const pluginDir = isProd ? path.join(distServerDir, "plugins") : path.join(projectRoot, "plugins");
+const apiDir = isProd
+  ? path.join(distServerDir, "api")
+  : path.join(projectRoot, "api");
+const pluginDir = isProd
+  ? path.join(distServerDir, "plugins") // dist/server/plugins
+  : path.join(projectRoot, "plugins");
 const srcPath = path.join(projectRoot, "src");
 const RippleAppPath = path.join(srcPath, "App.ripple");
 
@@ -57,9 +62,12 @@ async function registerApiRoutes(app: FastifyInstance, dir: string, prefix = "")
 // --------------------- START SERVER ---------------------
 export async function StartServer(): Promise<FastifyInstance> {
   const app: FastifyInstance = Fastify({ routerOptions: { ignoreTrailingSlash: true } });
+  const isProd = process.env.NODE_ENV === "production";
 
   await app.register(fastifyMiddie);
   await registerPlugins(app, pluginDir);
+
+const clientMiddlewareDir = path.join(projectRoot, "");
   await registerApiRoutes(app, apiDir);
 
   if (!isProd) {
@@ -69,88 +77,100 @@ export async function StartServer(): Promise<FastifyInstance> {
       server: { middlewareMode: true, hmr: { port: vite_port } },
     });
 
-    // Serve frontend routes through Fastify (so hooks still work)
-    app.get("/*", async (req: FastifyRequest, reply: FastifyReply) => {
-      const url = req.url || "/";
-
-      if (url.startsWith("/api") || /\.[a-zA-Z0-9]+$/.test(url)) {
-        return reply.callNotFound(); // Let Fastify handle real files or APIs
-      }
-
-      try {
-        let template = fs.readFileSync(path.resolve(projectRoot, "index.html"), "utf-8");
-        template = await vite.transformIndexHtml(url, template);
-
-        const { App } = await vite.ssrLoadModule(RippleAppPath);
-        const { head, body, css } = await render(App);
-        const cssTags = css.size > 0 ? `<style data-ripple-ssr>${[...css].join("\n")}</style>` : "";
-
-        const html = template
-          .replace("<!--ssr-head-->", head + cssTags)
-          .replace("<!--ssr-body-->", body);
-
-        reply.type("text/html").send(html);
-      } catch (err) {
-        vite.ssrFixStacktrace(err as Error);
-        console.error("SSR Error:", err);
-        reply.status(500).send((err as Error).stack || String(err));
-      }
-    });
-
-    // Attach vite.middlewares but wrapped so hooks still run
-    app.addHook("onRequest", async (req, reply) => {
-      // Let vite handle transform/static requests internally (like /@vite or /src)
-      if (!req.url.startsWith("/api")) {
-        await new Promise<void>((resolve) => vite.middlewares(req.raw, reply.raw, resolve));
-      }
-    });
-  } else {
-    // --------------------- PRODUCTION MODE ---------------------
-    const clientRoot = distDir;
-
-    await app.register(fastifyStatic, {
-      root: clientRoot,
-      prefix: "/",
-      index: ["index.html"],
-      wildcard: false,
-    });
-
-    app.get("/*", async (req: FastifyRequest, reply: FastifyReply) => {
-      if (req.url.startsWith("/api") || /\.[a-zA-Z0-9]+$/.test(req.url || "")) {
-        return reply.callNotFound();
-      }
-
-      try {
-        const template = fs.readFileSync(path.join(clientRoot, "index.html"), "utf-8");
-        const entryServer = path.join(distServerDir, "server.js");
-        const { App } = await import(pathToFileURL(entryServer).href);
-
-        const { head, body, css } = await render(App);
-        const cssTags = css.size > 0 ? `<style data-ripple-ssr>${[...css].join("\n")}</style>` : "";
-
-        const html = template
-          .replace("<!--ssr-head-->", head + cssTags)
-          .replace("<!--ssr-body-->", body);
-
-        reply.type("text/html").send(html);
-      } catch (err) {
-        console.error("SSR (Prod) Error:", err);
-        reply.status(500).send((err as Error).stack || String(err));
-      }
-    });
+    app.get("/*", async (req, reply) => {
+  // Skip API routes or static assets
+  if (req.url?.startsWith("/api") || /\.[a-zA-Z0-9]+$/.test(req.url)) {
+    return reply.callNotFound();
   }
 
-  // --------------------- SERVER START ---------------------
-  let port = 3000;
-  if (isProd && process.env.PORT) {
-    port = Number(process.env.PORT);
-  } else {
-    port = await getPort({ port: [3000, 3001, 3002, 4000, 4001] });
-  }
+  // Now you can run frontend middleware manually if needed
+
+  // SSR render
+  const template = fs.readFileSync(path.resolve(projectRoot, "index.html"), "utf-8");
+  const transformed = await vite.transformIndexHtml(req.url || "/", template);
+  const { App } = await vite.ssrLoadModule(RippleAppPath);
+  const { head, body, css } = await render(App);
+  const cssTags = css.size > 0 ? `<style data-ripple-ssr>${[...css].join("\n")}</style>` : "";
+  const html = transformed.replace("<!--ssr-head-->", head + cssTags)
+                          .replace("<!--ssr-body-->", body);
+
+  reply.type("text/html").send(html);
+});
+
+  //   app.get("/*", async (req: FastifyRequest, reply: FastifyReply) => {
+  //      if (req.url.startsWith("/api") || /\.[a-zA-Z0-9]+$/.test(req.url || "")) {
+  //   return reply.callNotFound(); // Let Fastify handle 404s
+  // }
+  //     try {
+  //       let template = fs.readFileSync(path.resolve(projectRoot, "index.html"), "utf-8");
+  //       template = await vite.transformIndexHtml(req.url || "/", template);
+
+  //       const { App } = await vite.ssrLoadModule(RippleAppPath);
+  //       const { head, body, css } = await render(App);
+  //       const cssTags = css.size > 0 ? `<style data-ripple-ssr>${[...css].join("\n")}</style>` : "";
+
+  //       const html = template
+  //         .replace("<!--ssr-head-->", head + cssTags)
+  //         .replace("<!--ssr-body-->", body);
+
+  //       reply.type("text/html").send(html);
+  //     } catch (err) {
+  //       console.error("SSR Error:", err);
+  //       reply.status(500).send((err as Error).stack || String(err));
+  //     }
+  //   });
+ } else {
+  // --------------------- PRODUCTION MODE ---------------------
+  const clientRoot = distDir;
+
+  // Serve static files, but after APIs have been registered
+  await app.register(fastifyStatic, {
+    root: clientRoot,
+    prefix: "/",
+    index: ["index.html"],
+    wildcard: false,
+  });
+
+  // Fallback SSR route for non-API requests
+  app.get("/*", async (req: FastifyRequest, reply: FastifyReply) => {
+    // ✅ Don't let SSR handle API routes or real files
+    if (req.url.startsWith("/api") || /\.[a-zA-Z0-9]+$/.test(req.url || "")) {
+      return reply.callNotFound();
+    }
+
+    try {
+      const template = fs.readFileSync(path.join(clientRoot, "index.html"), "utf-8");
+      const entryServer = path.join(distServerDir, "server.js");
+      const { App } = await import(pathToFileURL(entryServer).href);
+
+      const { head, body, css } = await render(App);
+      const cssTags = css.size > 0 ? `<style data-ripple-ssr>${[...css].join("\n")}</style>` : "";
+
+      const html = template
+        .replace("<!--ssr-head-->", head + cssTags)
+        .replace("<!--ssr-body-->", body);
+
+      reply.type("text/html").send(html);
+    } catch (err) {
+      console.error("SSR (Prod) Error:", err);
+      reply.status(500).send((err as Error).stack || String(err));
+    }
+  });
+}
+
+
+let port = 3000;
+
+if (isProd && process.env.PORT) {
+  port = Number(process.env.PORT);
+} else {
+  const getPort = (await import("get-port")).default;
+  port = await getPort({ port: [3000, 3001, 3002, 4000, 4001] });
+}
 
   app.listen({ port, host: "0.0.0.0" }, (err, address) => {
     if (err) throw err;
-    console.log(`Rivra ${isProd ? "Production" : "Development + SSR"} running on ${address}`);
+    console.log(`Rivra ${isProd ? "Production" : "Development + SSR"} server running on ${address}`);
   });
 
   return app;
