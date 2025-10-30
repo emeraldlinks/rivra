@@ -17,8 +17,14 @@ Not just a router — Rivra is a complete toolkit combining routing, state manag
 ![license](https://img.shields.io/npm/l/rivra)
 <img src="https://www.ripplejs.com/ripple-logo-horizontal.png" alt="Ripple Logo" width="100" style="margin-left:30px; height:30px;" />
 
+-----
 
+> **Update:**   
+ Rivra middleware now applies to the **client side** as well — not just API routes.  
+> Global Middleware and Plugins are now executed **across all routes and resources**, ensuring unified behavior.  
+> _(Page-specific middleware or plugin logic isn’t supported yet.)_
 
+---
 
 
 ##
@@ -118,19 +124,60 @@ plugins/
  │    └── index.ts                → /users routes
  └── logger.ts                    → global plugin
 ```
+
+
+* Example of plugin
 ```ts
 export const order = 2; // order from 1-10 gives you ability to prioritize the order which your hooks run.
 
-export default async function (app) {
-  app.addHook('onRequest', async (req, reply) => {
-    reply.header('X-Powered-By', 'Rivra');
-  });
-}
+export default async function (req: Req, reply: Reply, app: App) {
+  console.log("global plugin triggered")
+  reply.header('X-Powered-By', 'Rivra');
 
+  if (req.url === "/api/users") {
+    reply.send({ message: "Users root route" });
+  } else if (req.url === "/api/users/profile") {
+    reply.send({ message: "User profile route" });
+  }
+
+}
 
 
 ```
 
+* Example of middlewre
+```ts
+  
+export default function (req: Req, res: Reply,) {
+  console.log("Protected middleware Incoming:", req.method, req.url);
+  const truthy = true
+  if (!truthy) {
+    res.code(400).send({error: "Bad request"})
+    return
+  }
+  if (req.url === "/api/blocked") {
+    res.code(403).send({ error: "Forbidden" });
+    return;
+  }
+
+}
+
+
+```
+
+#### Here’s a simple and clear table that explains the difference between a plugin and a middleware and how Rivra handle them.
+
+| **Aspect**                                  | **Plugin**                                                                                  | **Middleware**                                                                                                                          |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Purpose**                                 | Extends or configures the Fastify instance (adds routes, hooks, decorators, schemas, etc.)  | Intercepts and processes requests before or during route handling (authentication, logging, validation, etc.)                           |
+| **Function Signature**                      | `(app: FastifyInstance) => void`                                                            | `(req: FastifyRequest, reply: FastifyReply, app: FastifyInstance) => void`                                                              |
+| **Execution Time**                          | Runs **once** during server startup to register logic                                       | Runs **on every incoming request** (depending on where it’s applied)                                                                    |
+| **Common Use Cases**                        | Adding routes, setting up databases, registering third-party plugins, global configurations | Authentication checks, access control, logging, pre-processing requests`                                                    | Using hooks like `app.addHook("preHandler", handler)` or route-level middlewares                                                        |
+| **Scope**                                   | Can be **scoped** to a prefix (e.g., `/api/protected`)                                      | Can be **global** or **route-specific**                                                                                                 |
+| **Impact**                                  | Modifies or enhances the app’s capabilities                                                 | Filters or modifies the request/response cycle                                                                                          |
+| **File Naming Convention (in your system)** | `*.pg.ts` (Scoped Plugin)                                                                   | `*.md.ts` (Middleware)                                                                                                                  |
+| **Example (Plugin)**                        | `export default async function (app) { app.get('/hello', () => 'Hi');}`          |                                                                                                                                         |
+| **Example (Middleware)**                    |                                                                                             | `t export default async function (req, reply, app) {  if (!req.headers.auth) reply.code(401).send({ error: 'Unauthorized' });}` |
 
 
 | Type              | Example File                    | Prefix Applied | Loaded As  | Order                      |
@@ -340,7 +387,7 @@ Here are extra two simple Hello World store examples for getting started and exp
 
 ### Store without persist (default)
 ```ts
-import { createStore } from "rivra"
+import { createStore } from "rivra/store"
 
 // Create a simple store
 const helloStore = createStore({ message: "Hello World!" });
@@ -370,7 +417,7 @@ helloStore.update({ message: "Hello Ripple!" });
 ### Store with persist
 
 ```ts
-import { createStore } from "rivra"
+import { createStore } from "rivra/store"
 import { track } from "ripple"
 
 const message = track("")
@@ -478,6 +525,8 @@ appStore.clear();
 
    ✅ Minimal Example
  ```ts
+ import createIndexDBStore from "rivra/stores"
+import IndexDBManager from "rivra/stores"
  const userStore = createIndexDBStore({
   storeName: 'users',
  });
@@ -602,6 +651,9 @@ appStore.clear();
  This is experimental currently. This api allows you make your apps offline first.
 
    ```ts
+import createIndexDBStore from "rivra/stores"
+// import IndexDBManager from "rivra/stores"
+
   const userStore = createIndexDBStore<User>({
     dbName: "MyAppDB",
     storeName: "users",

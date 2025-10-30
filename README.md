@@ -18,7 +18,11 @@ Not just a router — Rivra is a complete toolkit combining routing, state manag
 <img src="https://www.ripplejs.com/ripple-logo-horizontal.png" alt="Ripple Logo" width="100" style="margin-left:30px; height:30px;" />
 
 -----
-`  for any problems you may have been facing recently regarding the build and start commands, typings, server and plugins, they have been fixed. However I'm still observng for any errors. `
+
+> **Update:**   
+ Rivra middleware now applies to the **client side** as well — not just API routes.  
+> Global Middleware and Plugins are now executed **across all routes and resources**, ensuring unified behavior.  
+> _(Page-specific middleware or plugin logic isn’t supported yet.)_
 
 ---
 
