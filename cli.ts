@@ -37,11 +37,11 @@ import { track } from 'ripple';
 export default component Home() {
     let count = track(0);
 
-    <div class="container" style={\`display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; text-align: center; font-family: sans-serif;\`}>
+    <div class="container dark:bg-black dark:text-white" style={\`display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; text-align: center; font-family: sans-serif;\`}>
         <main class="main" style={\`flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;\`}>
             <img src="https://www.ripplejs.com/ripple-logo-horizontal.png" lazy alt="" width={260} style={\`margin-bottom: 2rem;\`} />
             <h1 class="title" style={\`font-size: 2.5rem; margin-bottom: 1rem;\`}>
-                {'Welcome to '}<span class="highlight" style={\`color: #0070f3;\`}>{"Ripple!"}</span>
+                {'Welcome to Rivra '}<span class="highlight" style={\`color: #0070f3;\`}>{"Ripple!"}</span>
             </h1>
 
             <div class="counter" style={\`display: flex; align-items: center; margin: 1rem 0;\`}>
@@ -86,12 +86,12 @@ export default component Home() {
 import { useRouter, Link } from "rivra/router";
 
 export default component NotFound404() {
-  <div class="notfound">
+  <div class="notfound  dark:!text-white dark:bg-black ">
     <h1 class="error-code">
       {"40"}<span class="last">{"4"}</span>
     </h1>
     <p>{"Oops! The page you are looking for does not exist."}</p>
-    <Link href="/" className="button bg-black text-white rounded-md p-2 font-bold animate-bounce mt-8">{"Go Home"}</Link>
+    <Link href="/" className="button  dark:text-black dark:bg-white bg-black text-white rounded-md p-2 font-bold animate-bounce mt-8">{"Go Home"}</Link>
 
     <style>
       .error-code {
