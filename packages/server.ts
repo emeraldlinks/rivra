@@ -97,7 +97,7 @@ async function registerApiRoutes(app: FastifyInstance, dir: string, prefix = "")
  * Creates and runs the Fastify + Vite dev server.
  * ---------------------------------------------------------------
  */
-export async function StartServer(): Promise<FastifyInstance> {
+export async function StartServer(p0: { dev: boolean; }): Promise<FastifyInstance> {
   const app = Fastify({
     routerOptions: { ignoreTrailingSlash: true },
   });

@@ -22,6 +22,7 @@
     "**/*.ripple",
     "cli.ts",
     "ripple-env.d.ts",
+    "src/cli.ts",
     "src/router/index.d.ts"
   ]
 }

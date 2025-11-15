@@ -19,3 +19,4 @@ export default defineConfig(({ mode }) => ({
   },
   root: path.resolve(__dirname),
 }));
+//    "build": "vite build && tsc --outDir dist --declaration --emitDeclarationOnly false && cp src/router/index.d.ts dist/src/router/index.d.ts",
