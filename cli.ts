@@ -37,7 +37,7 @@ import { track } from 'ripple';
 export default component Home() {
     let count = track(0);
 
-    <div class="container dark:bg-black dark:text-white" style={\`display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; text-align: center; font-family: sans-serif;\`}>
+    <div class=" dark:bg-black dark:text-white" style={\`display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; text-align: center; font-family: sans-serif;\`}>
         <main class="main" style={\`flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;\`}>
             <img src="https://www.ripplejs.com/ripple-logo-horizontal.png" lazy alt="" width={260} style={\`margin-bottom: 2rem;\`} />
             <h1 class="title" style={\`font-size: 2.5rem; margin-bottom: 1rem;\`}>
@@ -188,9 +188,9 @@ export const modules = import.meta.glob("/src/pages/**/*.ripple", { eager: true 
   };
   fs.writeFileSync(vercelPath, JSON.stringify(vercelConfig, null, 2));
 
-  console.log(
-    "✅ Created src/pages/index.ripple, notfound.ripple, App.ripple, routes.ts, and vercel.json"
-  );
+  // console.log(
+  //   "✅ Created src/pages/index.ripple, notfound.ripple, App.ripple, routes.ts, and vercel.json"
+  // );
 };
 
 /** CREATE COMMAND */
@@ -234,7 +234,7 @@ async function startDev() {
 async function buildApp() {
   console.log("Building Rivra app...");
   try {
-    execSync("npx vite build && tsc -p tsconfig.build.json", {
+    execSync("vite build && tsc -p tsconfig.build.json", {
       stdio: "inherit",
     });
   } catch (err: any) {
@@ -296,22 +296,26 @@ async function initApp() {
   fs.mkdirSync(middlewareDir, { recursive: true });
 
   const indexContent = `
-import { StartServer } from "rivra/server"
+import { StartServer, RivraHandler } from "rivra/server";
 
 (async () => {
   const app = await StartServer();
-  // app.register(...) // register plugins and add custom instance behaviours.
-})();`;
+   app.start();
+})();
+
+
+export default RivraHandler;
+`;
   fs.writeFileSync(indexPath, indexContent.trim() + "\n");
 
   const apiContent = `
-import type { App, Req, Reply } from "rivra"
+import type { Req, Reply } from "rivra"
 
-export default async function registerApi(app: App) { 
-  app.get("/", async (req: Req, reply: Reply) => {
-    return { message: "Hello from Ripple full-stack!" }
-  })
-}`;
+export default async function handler(req: Req, res: Reply) {
+  if (req.method !== "GET") return res.status(405).send({ message: "Method not allowed" });
+  res.status(200).send({ hello: "serverless" });
+}
+`;
   fs.writeFileSync(apiPath, apiContent.trim() + "\n");
 
   const nodemonContent = `
@@ -326,14 +330,18 @@ export default async function registerApi(app: App) {
   const pluginContent = `
 import type { App, Req, Reply } from "rivra"
 
-export default async function (req: Req, reply: Reply, app: App) {
-  console.log("global plugin triggered")
-  if (req.url === "/api/users") {
-    reply.send({ message: "Users root route" });
-  } else if (req.url === "/api/users/profile") {
-    reply.send({ message: "User profile route" });
-  }
+export default async function(app: App) {
 
+  // await app.register(cookie, {
+  //   secret: "my-secret-key",
+  //   parseOptions: {},
+  // });
+  app.addHook("onRequest", async (req, reply) => {
+    console.log("Incoming URL:", req.raw.url);
+    reply.header('X-Powered-By', 'Rivra');
+    console.log("Cookies:", req.cookies); // Now safe
+  });
+  app.decorateRequest("user", null);
 }
 
 // plugins/some_plugin.ts -> global plugin (all routes)
@@ -424,7 +432,9 @@ export default function (req: Req, res: Reply) {
   execSync("npm install fastify @fastify/middie get-port vite", {
     stdio: "inherit",
   });
-  execSync("npm install ts-node @types/connect cross-env -D", { stdio: "inherit" });
+  execSync("npm install ts-node @types/connect cross-env -D", {
+    stdio: "inherit",
+  });
 
   console.log(`
 Rivra full-stack initialized successfully!

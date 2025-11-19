@@ -157,6 +157,10 @@ class RouterStore {
     window.dispatchEvent(new Event("popstate"));
   }
 
+  reload() {
+  if (typeof window !== "undefined") window.location.reload();
+}
+
   /** Internal navigation helper */
   private navigate(url: string, method: "push" | "replace", announce = true, shallow = false) {
     if (typeof window === "undefined") return;
@@ -259,6 +263,7 @@ export interface Router {
   prefetch: (url: string) => Promise<void>;
   resolveHref: (url: string) => string;
   isActive: (url: string) => boolean;
+  reload: ()=> void;
   readonly host: string;
   readonly hostname: string;
   readonly protocol: string;
@@ -289,7 +294,9 @@ export function useRouter(): Router {
     beforePopState: (cb) => routerStore.beforePopState(cb),
     prefetch: (url) => routerStore.prefetch(url),
     resolveHref: (url) => routerStore.resolveHref(url),
+    reload: ()=> routerStore.reload(),
     isActive: (url) => url === routerStore.path,
+    
     get host() { return typeof window !== "undefined" ? window.location.host : ""; },
     get hostname() { return typeof window !== "undefined" ? window.location.hostname : ""; },
     get protocol() { return typeof window !== "undefined" ? window.location.protocol : ""; },
