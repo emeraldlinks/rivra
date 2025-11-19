@@ -247,7 +247,7 @@ async function buildApp() {
 async function startApp() {
   console.log("Starting Rivra app...");
   try {
-    execSync(`NODE_ENV=production node dist/server/server.js`, {
+    execSync(`NODE_ENV=production node dist/server.js`, {
       stdio: "inherit",
     });
   } catch (err: any) {
@@ -407,9 +407,9 @@ export default function (req: Req, res: Reply) {
 
   const tsBuild = {
     extends: "./tsconfig.json",
-    include: ["index.ts", "api/**/*.ts", "server.ts", "plugins"],
+    include: ["index.ts", "api/**/*.ts", "server.ts", "plugins", "src"],
     exclude: ["node_modules", "dist", "src/**/*.ripple", "src/pages"],
-    compilerOptions: { noEmit: false, outDir: "dist/server" },
+    compilerOptions: { noEmit: false, outDir: "dist" },
   };
   fs.writeFileSync(
     path.join(projectDir, "tsconfig.build.json"),

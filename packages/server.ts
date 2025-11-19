@@ -43,15 +43,16 @@ const isProd = process.env.NODE_ENV === "production";
 // Resolve paths relative to current file
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = process.cwd();
+
 const distDir = path.join(projectRoot, "dist");
-const distServerDir = path.join(distDir, "server");
 
 // Dynamic directories based on environment
 const apiDir = isProd
-  ? path.join(distServerDir, "api")
+  ? path.join(distDir, "api")
   : path.join(projectRoot, "api");
+
 const pluginDir = isProd
-  ? path.join(distServerDir, "plugins")
+  ? path.join(distDir, "plugins")
   : path.join(projectRoot, "plugins");
 
 /**
