@@ -1,7 +1,7 @@
 import type { Component } from 'ripple';
 import { useRouter } from '../userouter';
-import { track, effect } from 'ripple';
-import { LinkProps } from "../types.ts";
+import { track } from 'ripple';
+import type { LinkProps } from "../types";
 
 /**
  * @component
@@ -66,9 +66,9 @@ const handleClick = (e: MouseEvent) => {
 
 
 
-  <a class={className} href={href} onClick={handleClick}>
-    <children />
-  </a>
+
+
+<a {href} class={className ? className : ""} onClick={handleClick} > <children /> </a>
 
   if (@isLoading && loadingComponent) {
     <loadingComponent />

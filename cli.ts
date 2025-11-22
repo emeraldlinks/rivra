@@ -86,12 +86,12 @@ export default component Home() {
 import { useRouter, Link } from "rivra/router";
 
 export default component NotFound404() {
-  <div class="notfound  dark:!text-white dark:bg-black ">
+   <div class="notfound  dark:text-white! dark:bg-black! ">
     <h1 class="error-code">
       {"40"}<span class="last">{"4"}</span>
     </h1>
     <p>{"Oops! The page you are looking for does not exist."}</p>
-    <Link href="/" className="button  dark:text-black dark:bg-white bg-black text-white rounded-md p-2 font-bold animate-bounce mt-8">{"Go Home"}</Link>
+    <Link href="/" className="button  dark:text-black dark:bg-white! bg-black text-white rounded-md p-2 font-bold animate-bounce mt-8">{"Go Home"}</Link>
 
     <style>
       .error-code {

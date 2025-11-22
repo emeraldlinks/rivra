@@ -17,11 +17,11 @@ export interface RouterProp {
 }
 
 export interface LinkProps {
-  href: string;
   children: Component;
   onLoading?: () => void;
   emitEvent?: boolean;
   loadingComponent?: Component;
   className?: string;
   queries?: Record<string, string | number | boolean>;
+  href: string;
 }

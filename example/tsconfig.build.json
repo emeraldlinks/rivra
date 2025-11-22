@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "index.ts",
+    "api/**/*.ts",
+    "server.ts",
+    "plugins",
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.ripple",
+    "src/pages"
+  ],
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist"
+  }
+}

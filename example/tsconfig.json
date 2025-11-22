@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "nodenext",
+    "jsx": "preserve",
+    "jsxImportSource": "ripple",
+    "noEmit": true,
+    "isolatedModules": true,
+    "types": [
+      "node"
+    ],
+    "allowImportingTsExtensions": false,
+    "skipLibCheck": true,
+    "noEmitOnError": false
+  }
+}

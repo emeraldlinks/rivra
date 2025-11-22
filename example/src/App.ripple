@@ -1,0 +1,6 @@
+import { PageRoutes } from "rivra/router";
+import { modules } from "./routes";
+
+export component App() {
+    <PageRoutes modules={modules} />
+}
