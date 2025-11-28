@@ -100,7 +100,7 @@ import cookie from "@fastify/cookie";
   await app.start();
 })();
 
-
+ 
 ```
 
 ```ts
